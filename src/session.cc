@@ -46,6 +46,7 @@ session::session(boost::asio::io_service& io_service)
       response << "Content-Length: " << bytes_transferred;
       response << "\r\n\r\n";
       response << data_;
+      memset(data_, 0, max_length);
       // write http response to socket
       boost::asio::async_write(socket_,
           boost::asio::buffer(response.str()),
