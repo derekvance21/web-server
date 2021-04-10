@@ -35,12 +35,13 @@ message(STATUS "Boost version: ${Boost_VERSION}")
 include_directories(include)
 
 # TODO(!): Update name and srcs
+add_library(config_parser src/config_parser.cc)
 add_library(server_lib src/server.cc)
 add_library(session_lib src/session.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/main.cc)
-target_link_libraries(webserver Boost::system pthread server_lib session_lib)
+target_link_libraries(webserver Boost::system pthread server_lib session_lib config_parser)
 
 # TODO(!): Update test executable name, srcs, and deps
 # add_executable(example_lib_test tests/example_lib_test.cc)
@@ -51,4 +52,4 @@ target_link_libraries(webserver Boost::system pthread server_lib session_lib)
 
 # TODO(!): Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS webserver) #example_lib TESTS example_lib_test)
+generate_coverage_report(TARGETS webserver server_lib session_lib) #example_lib TESTS example_lib_test)
