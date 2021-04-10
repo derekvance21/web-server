@@ -14,18 +14,22 @@ RUN ctest --output-on_failure
 
 ### Deploy container ###
 # Define deploy stage
-FROM ubuntu:latest as deploy
+FROM ubuntu:focal as deploy
 
-# TODO(!): Copy server output binary to "."
-# COPY --from=builder /usr/src/project/build/bin/example_server .
+# TODO(samyallal00): Copy server output binary to "."
+COPY --from=builder /usr/src/project/build/bin/webserver .
 
-# TODO(!): Expose some port(s)
-# EXPOSE 80
+# Added: COPY configuration file from builder stage so it’s accessible in the deploy stage
+# Above is noted in spec section "Create a Docker container"
+COPY --from=builder /usr/src/project/build/config/config_file .
+
+# TODO(samyallal00): Expose some port(s)
+EXPOSE 8080
 
 # Use ENTRYPOINT to specify the binary name
-# TODO(!): Update with real server name
-# ENTRYPOINT ["./example_server"]
+# TODO(samyallal00): Update with real server name
+ENTRYPOINT ["./webserver"]
 
 # Use CMD to specify arguments to ENTRYPOINT
-# TODO(!): Update with real server args
-# CMD [""]
+# TODO(samyallal00): Update with real server args
+# CMD ["config_file"]
