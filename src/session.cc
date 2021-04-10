@@ -14,6 +14,7 @@
 #include <boost/asio.hpp>
 #include "session.hpp"
 #include "server.hpp"
+#include <sstream>
 
 using boost::asio::ip::tcp;
 
@@ -27,6 +28,7 @@ session::session(boost::asio::io_service& io_service)
 
   void session::start()
   {
+    // should we use async_read_until to detect end of request with a \r\n
     socket_.async_read_some(boost::asio::buffer(data_, max_length),
         boost::bind(&session::handle_read, this,
           boost::asio::placeholders::error,
@@ -38,8 +40,16 @@ session::session(boost::asio::io_service& io_service)
   {
     if (!error)
     {
+      // format response
+      std::stringstream response;
+      response << "HTTP/1.1 200 OK\r\n";
+      response << "Content-Type: text/plain\r\n";
+      response << "Content-Length: " << bytes_transferred;
+      response << "\r\n\r\n";
+      response << data_;
+      // write to http response to socket
       boost::asio::async_write(socket_,
-          boost::asio::buffer(data_, bytes_transferred),
+          boost::asio::buffer(response.str()),
           boost::bind(&session::handle_write, this,
             boost::asio::placeholders::error));
     }
@@ -53,7 +63,8 @@ session::session(boost::asio::io_service& io_service)
   {
     if (!error)
     {
-      socket_.async_read_some(boost::asio::buffer(data_, max_length),
+      // should we use async_read_until to detect end of request with a \r\n
+      socket_.async_read_some(boost::asio::buffer(data_, max_length),		   
           boost::bind(&session::handle_read, this,
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
