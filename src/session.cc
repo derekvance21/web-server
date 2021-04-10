@@ -28,7 +28,6 @@ session::session(boost::asio::io_service& io_service)
 
   void session::start()
   {
-    // should we use async_read_until to detect end of request with a \r\n
     socket_.async_read_some(boost::asio::buffer(data_, max_length),
         boost::bind(&session::handle_read, this,
           boost::asio::placeholders::error,
@@ -47,7 +46,7 @@ session::session(boost::asio::io_service& io_service)
       response << "Content-Length: " << bytes_transferred;
       response << "\r\n\r\n";
       response << data_;
-      // write to http response to socket
+      // write http response to socket
       boost::asio::async_write(socket_,
           boost::asio::buffer(response.str()),
           boost::bind(&session::handle_write, this,
@@ -63,7 +62,6 @@ session::session(boost::asio::io_service& io_service)
   {
     if (!error)
     {
-      // should we use async_read_until to detect end of request with a \r\n
       socket_.async_read_some(boost::asio::buffer(data_, max_length),		   
           boost::bind(&session::handle_read, this,
             boost::asio::placeholders::error,
