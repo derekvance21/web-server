@@ -18,6 +18,9 @@ class NginxConfigStatement {
 // The parsed representation of the entire config.
 class NginxConfig {
  public:
+  // Take the string of a config file and parse the file to return the 
+  // port defined in the file.
+  int GetPort();
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 };
@@ -26,7 +29,7 @@ class NginxConfig {
 class NginxConfigParser {
  public:
   NginxConfigParser() {}
-
+  
   // Take a opened config file or file name (respectively) and store the
   // parsed config in the provided NginxConfig out-param.  Returns true
   // iff the input config file is valid.

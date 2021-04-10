@@ -13,7 +13,33 @@
 #include <stack>	
 #include <string>	
 #include <vector>	
-#include "config_parser.h"	
+#include "config_parser.h"
+#include <boost/asio.hpp>
+
+using boost::asio::ip::tcp;
+
+// adding new function to return the port number in the config file
+int NginxConfig::GetPort() {
+ // parse config file to find port number
+ std::string config_string = this->ToString();
+
+ int port_pos = config_string.find("port ");
+ if(port_pos == std::string::npos)
+ {
+    std::cerr << "No port in config file. Usage: port <port num>;\n";
+    return -1;
+ }
+
+ std::string port = config_string.substr(port_pos+5);
+
+ using namespace std; // For atoi.
+ if(atoi(port.c_str()) == 0){
+    std::cerr << "Invalid port in config file. Usage: port <port num>;\n";
+    return -1;
+ }
+ return atoi(port.c_str());
+}
+
 std::string NginxConfig::ToString(int depth) {	
   std::string serialized_config;	
   for (const auto& statement : statements_) {	
@@ -152,7 +178,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   while (true) {	
     std::string token;	
     token_type = ParseToken(config_file, &token);	
-    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());	
+   	
     if (token_type == TOKEN_TYPE_ERROR) {	
       break;	
     }	

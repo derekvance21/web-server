@@ -14,7 +14,8 @@
 #include <boost/asio.hpp>
 #include "server.hpp"
 #include "session.hpp"
-
+#include "config_parser.h"
+#include <string>
 
 using boost::asio::ip::tcp;
 
@@ -24,14 +25,24 @@ int main(int argc, char* argv[])
   {
     if (argc != 2)
     {
-      std::cerr << "Usage: webserver <port>\n";
+     std::cerr << "Usage: webserver <path to config file>\n"; 
+     return 1;
+    }
+    
+    NginxConfigParser config_parser;
+    NginxConfig config;
+    if(!config_parser.Parse(argv[1], &config)) {
+      std::cerr << "Invalid config file.\n";
       return 1;
     }
-
-    boost::asio::io_service io_service;
-
-    using namespace std; // For atoi.
-    server s(io_service, atoi(argv[1]));
+    std::string config_string = config.ToString();
+    
+    // call GetPort function to parse config file and retrieve port number
+    int port_num = config.GetPort();
+    if(port_num == -1)
+	    return 1;
+    boost::asio::io_service io_service;    
+    server s(io_service, port_num);
 
     io_service.run();
   }

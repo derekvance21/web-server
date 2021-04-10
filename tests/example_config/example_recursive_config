@@ -1,0 +1,11 @@
+http {
+  server {
+    location /index {
+
+    }
+    location /about {
+      include conf.d/http;
+    }
+  }
+}
+
