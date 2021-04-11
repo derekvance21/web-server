@@ -21,7 +21,7 @@ COPY --from=builder /usr/src/project/build/bin/webserver .
 
 # Added: COPY configuration file from builder stage so it’s accessible in the deploy stage
 # Above is noted in spec section "Create a Docker container"
-COPY --from=builder /usr/src/project/build/config/config_file .
+COPY --from=builder /usr/src/project/config/config_file .
 
 # TODO(samyallal00): Expose some port(s)
 EXPOSE 8080
