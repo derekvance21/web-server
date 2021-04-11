@@ -32,4 +32,4 @@ ENTRYPOINT ["./webserver"]
 
 # Use CMD to specify arguments to ENTRYPOINT
 # TODO(samyallal00): Update with real server args
-# CMD ["config_file"]
+CMD ["config_file"]
