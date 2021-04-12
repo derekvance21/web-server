@@ -20,24 +20,34 @@ using boost::asio::ip::tcp;
 
 // adding new function to return the port number in the config file
 int NginxConfig::GetPort() {
- // parse config file to find port number
- std::string config_string = this->ToString();
+  /* parse config file to find port number */
+  std::string config_string = this->ToString();
 
- int port_pos = config_string.find("port ");
- if(port_pos == std::string::npos)
- {
-    std::cerr << "No port in config file. Usage: port <port num>;\n";
-    return -1;
- }
+  /* First, look for port, if found compute the port number position */
+  int port_pos = config_string.find("port ");
+  if(port_pos == std::string::npos) {
 
- std::string port = config_string.substr(port_pos+5);
+    // If cannot find port, look for listen and if found compute port number position
+    // else error
+    port_pos = config_string.find("listen ");
+    if(port_pos == std::string::npos) {
+      std::cerr << "No port in config file. Usage: port <port num>;\n";
+      return -1;
+    }
 
- using namespace std; // For atoi.
- if(atoi(port.c_str()) == 0){
+    port_pos += 7;
+  } else {
+    port_pos += 5;
+  }
+
+  std::string port = config_string.substr(port_pos);
+
+  using namespace std; // For atoi.
+  if(atoi(port.c_str()) == 0){
     std::cerr << "Invalid port in config file. Usage: port <port num>;\n";
     return -1;
- }
- return atoi(port.c_str());
+  }
+  return atoi(port.c_str());
 }
 
 std::string NginxConfig::ToString(int depth) {	

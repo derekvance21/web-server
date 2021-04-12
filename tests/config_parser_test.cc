@@ -44,3 +44,18 @@ TEST_F(NginxConfigParserTest, IncorrectSingleQuoteConfig) {
 TEST_F(NginxConfigParserTest, IncorrectQuotedStringConfig) {
   EXPECT_FALSE(parser.Parse("example_config/example_incorrect_quoted_string_config", &out_config));
 }
+
+TEST_F(NginxConfigParserTest, ParsingPort){
+  parser.Parse("example_config/config_port", &out_config);
+  EXPECT_TRUE(out_config.GetPort() == 8080);
+}
+
+TEST_F(NginxConfigParserTest, ParsingPortServer){
+  parser.Parse("example_config/config_port_server", &out_config);
+  EXPECT_TRUE(out_config.GetPort() == 80);
+}
+
+TEST_F(NginxConfigParserTest, ParsingPortListen){
+  parser.Parse("example_config/config_port_listen", &out_config);
+  EXPECT_TRUE(out_config.GetPort() == 80);
+}
