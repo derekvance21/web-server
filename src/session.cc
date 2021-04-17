@@ -12,65 +12,63 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-#include "session.hpp"
-#include "server.hpp"
+#include "session.h"
+#include "server.h"
+#include "response.h"
 #include <sstream>
 
 using boost::asio::ip::tcp;
 
 session::session(boost::asio::io_service& io_service)
-    : socket_(io_service){};
+  : socket_(io_service){};
 
-  tcp::socket& session::socket()
-  {
-    return socket_;
-  }
+tcp::socket& session::socket()
+{
+  return socket_;
+}
 
-  void session::start()
-  {
-    socket_.async_read_some(boost::asio::buffer(data_, max_length),
-        boost::bind(&session::handle_read, this,
-          boost::asio::placeholders::error,
-          boost::asio::placeholders::bytes_transferred));
-  }
+void session::start()
+{
+  socket_.async_read_some(boost::asio::buffer(data_, max_length),
+			  boost::bind(&session::handle_read, this,
+				      boost::asio::placeholders::error,
+				      boost::asio::placeholders::bytes_transferred));
+}
 
-  void session::handle_read(const boost::system::error_code& error,
-      size_t bytes_transferred)
-  {
-    if (!error)
+void session::handle_read(const boost::system::error_code& error,
+			  size_t bytes_transferred)
+{
+  if (!error)
     {
       // format response
-      std::stringstream response;
-      response << "HTTP/1.1 200 OK\r\n";
-      response << "Content-Type: text/plain\r\n";
-      response << "Content-Length: " << bytes_transferred;
-      response << "\r\n\r\n";
-      response << data_;
-      memset(data_, 0, max_length);
+      response response_obj(std::to_string(bytes_transferred),
+			    std::string(data_));
+      std::string response_msg = response_obj.GetResponse();
+      
       // write http response to socket
       boost::asio::async_write(socket_,
-          boost::asio::buffer(response.str()),
-          boost::bind(&session::handle_write, this,
-            boost::asio::placeholders::error));
+			       boost::asio::buffer(response_msg),
+			       boost::bind(&session::handle_write, this,
+					   boost::asio::placeholders::error));
     }
-    else
+  else
     {
       delete this;
     }
-  }
+}
 
-  void session::handle_write(const boost::system::error_code& error)
-  {
-    if (!error)
+void session::handle_write(const boost::system::error_code& error)
+{
+  if (!error)
     {
       socket_.async_read_some(boost::asio::buffer(data_, max_length),		   
-          boost::bind(&session::handle_read, this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+			      boost::bind(&session::handle_read, this,
+					  boost::asio::placeholders::error,
+					  boost::asio::placeholders::bytes_transferred));
     }
-    else
+  else
     {
       delete this;
     }
-  }
+}
 

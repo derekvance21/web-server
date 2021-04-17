@@ -12,8 +12,8 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
-#include "server.hpp"
-#include "session.hpp"
+#include "server.h"
+#include "session.h"
 #include "config_parser.h"
 #include <string>
 
@@ -31,17 +31,20 @@ int main(int argc, char* argv[])
     
     NginxConfigParser config_parser;
     NginxConfig config;
+    
     if(!config_parser.Parse(argv[1], &config)) {
-      std::cerr << "Invalid config file.\n";
+      std::cerr << "## Error ##: Invalid Config File.\n";
       return 1;
     }
+    
     std::string config_string = config.ToString();
     
-    // call GetPort function to parse config file and retrieve port number
+    // call GetPort function to parse config file and retrieve port number 
     int port_num = config.GetPort();
     if(port_num == -1)
-	    return 1;
-    boost::asio::io_service io_service;    
+      return 1;
+    
+    boost::asio::io_service io_service;
     server s(io_service, port_num);
 
     io_service.run();
