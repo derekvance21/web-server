@@ -41,7 +41,7 @@ add_library(session_lib src/session.cc src/response.cc)
 add_library(response_lib src/response.cc)
 
 # TODO(!): Update executable name, srcs, and deps
-add_executable(webserver src/server_main.cc)
+add_executable(webserver src/_main.cc)
 target_link_libraries(webserver Boost::system pthread server_lib response_lib session_lib config_parser)
 
 # TODO(!): Update test executable name, srcs, and deps
@@ -53,11 +53,14 @@ target_link_libraries(response_test response_lib gtest_main)
 
 add_executable(session_test tests/session_test.cc)
 target_link_libraries(session_test session_lib gtest_main)
+add_executable(server_test tests/server_test.cc)
+target_link_libraries(server_test server_lib session_lib gtest_main)
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME IntegrationTest 
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh 
@@ -65,4 +68,4 @@ add_test(NAME IntegrationTest
 
 # TODO(!): Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS webserver server_lib response_lib session_lib TESTS config_parser_test response_test session_test) #example_lib TESTS example_lib_test)
+generate_coverage_report(TARGETS webserver server_lib response_lib session_lib TESTS config_parser_test response_test session_test server_test)

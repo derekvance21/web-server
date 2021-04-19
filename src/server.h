@@ -22,15 +22,17 @@ using boost::asio::ip::tcp;
 class server
 {
 public:
+  server(boost::asio::io_service& io_service, short port, bool start_accept);
   server(boost::asio::io_service& io_service, short port);
-
+  int get_error();
 private:
-  void start_accept();
-
-  void handle_accept(session* new_session, const boost::system::error_code& error);
+  int start_accept();
+  //int get_error();
+  int handle_accept(session* new_session, const boost::system::error_code& error);
 
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
+  int accept_error;
 };
 
 #endif
