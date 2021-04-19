@@ -2,7 +2,7 @@
 
 DIR=`dirname $0`
 PWD=`pwd`
-PORT=8080
+PORT=80
 
 if [[ ! $PWD =~ $DIR$ ]]; then
   echo "wrong directory: must run integration.sh from tests/"
