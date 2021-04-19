@@ -82,7 +82,7 @@ void session::loopback_read(const boost::system::error_code& error)
 {
   if (!error)
     {
-      handle_read();
+      //handle_read();
     }
   else
     {
