@@ -2,12 +2,12 @@
 
 DIR=`dirname $0`
 PWD=`pwd`
-PORT=80
+PORT=8080
 
-if [[ ! $PWD =~ $DIR$ ]]; then
-  echo "wrong directory: must run integration.sh from tests/"
-  exit 1
-fi
+# if [[ ! $PWD =~ $DIR$ ]]; then
+#   echo "wrong directory: must run integration.sh from tests/"
+#   exit 1
+# fi
 
 echo "port ${PORT};" > tmp.config
 
