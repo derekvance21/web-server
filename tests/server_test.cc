@@ -48,3 +48,43 @@ TEST_F(ServerGeneratorTest, HandleAcceptError)
   int error_code = s.handle_accept(new_session, make_error_code(boost::system::errc::not_connected));
   EXPECT_TRUE(error_code == -1);
 }*/
+
+
+
+
+TEST_F(ServerGeneratorTest, HandleAcceptErrorTest)
+{
+  boost::system::error_code ec;
+  boost::asio::io_service io_service;
+  boost::asio::ip::tcp::socket socket(io_service);
+  boost::asio::ip::tcp::endpoint endpoint( boost::asio::ip::address::from_string("127.0.0.1"), 8080);
+  
+  session* my_session = new session(io_service);
+
+  
+  socket.connect(endpoint, ec);
+  server s(io_service, LOCALPORT, true);
+  io_service.run();
+  
+  int error_code = s.handle_accept(my_session, make_error_code(boost::system::errc::not_connected));
+  EXPECT_TRUE(error_code == -1);
+}
+
+
+TEST_F(ServerGeneratorTest, HandleAcceptSuccessTest)
+{
+  boost::system::error_code ec;
+  boost::asio::io_service io_service;
+  boost::asio::ip::tcp::socket socket(io_service);
+  boost::asio::ip::tcp::endpoint endpoint( boost::asio::ip::address::from_string("127.0.0.1"), 8080);
+  
+  session* my_session = new session(io_service);
+
+  
+  socket.connect(endpoint, ec);
+  server s(io_service, LOCALPORT, true);
+  io_service.run();
+  
+  int error_code = s.handle_accept(my_session, make_error_code(boost::system::errc::success));
+  EXPECT_TRUE(error_code == 0);
+}

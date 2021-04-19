@@ -20,9 +20,13 @@ using boost::asio::ip::tcp;
 class session
 {
 public:
+  session(boost::asio::io_service& io_service, bool test_flag);
   session(boost::asio::io_service& io_service);
   int send_response(const boost::system::error_code& error,
       size_t bytes_transferred);
+  int loopback_read(const boost::system::error_code& error);
+  void handle_read();
+  void handle_write(std::string response_msg);
 
   tcp::socket& socket();
   tcp::socket socket_;
@@ -30,10 +34,7 @@ public:
   void start();
 
 private:
-  void handle_read();
-  void handle_write(std::string response_msg);
-  void loopback_read(const boost::system::error_code& error);
-
+  int test_flag = false;
   enum { max_length = 1024 };
   char data_[max_length];
 };

@@ -19,6 +19,13 @@
 
 using boost::asio::ip::tcp;
 
+
+session::session(boost::asio::io_service& io_service, bool test_flag)
+  : socket_(io_service)
+{
+  this->test_flag = test_flag;
+}
+
 session::session(boost::asio::io_service& io_service)
   : socket_(io_service){};
 
@@ -78,15 +85,21 @@ void session::handle_write(std::string response_msg)
 }
 
 /* Callback function: after successful write to socket, loop again waiting for message */
-void session::loopback_read(const boost::system::error_code& error)
+int session::loopback_read(const boost::system::error_code& error)
 {
   if (!error)
     {
-      //handle_read();
+      if (!this->test_flag)
+	handle_read();
+
+      
+      return 0;
     }
   else
     {
       delete this;
+      
+      return 1;
     }
 }
 

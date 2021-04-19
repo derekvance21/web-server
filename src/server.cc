@@ -18,11 +18,13 @@
 using boost::asio::ip::tcp;
 
 // overloaded constructor that doesnt start_accept
-server::server(boost::asio::io_service& io_service, short port, bool start_accept)
+server::server(boost::asio::io_service& io_service, short port, bool test_flag)
 	: io_service_(io_service),
 	  acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
 	  accept_error (0)
-{}
+{
+  this->test_flag = test_flag;
+}
 
 server::server(boost::asio::io_service& io_service, short port)
   : io_service_(io_service),
@@ -55,6 +57,9 @@ int server::handle_accept(session* new_session, const boost::system::error_code&
     delete new_session;
     return -1;
   }
-  start_accept();
+
+  if (!test_flag)
+    start_accept();
+  
   return 0;
 }
