@@ -9,7 +9,7 @@ using boost::asio::ip::tcp;
 
 response::response()
 {
-  this->bytes_transferred = "0";
+  this->bytes_transferred = "1";
   this->data = "";
 }
 

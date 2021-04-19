@@ -27,15 +27,23 @@ tcp::socket& session::socket()
   return socket_;
 }
 
+/* Main function: starts off the reading from client */
 void session::start()
 {
+  handle_read();
+}
+
+/* Reads into data_ when message sent */
+void session::handle_read()
+{
   socket_.async_read_some(boost::asio::buffer(data_, max_length),
-			  boost::bind(&session::handle_read, this,
+			  boost::bind(&session::send_response, this,
 				      boost::asio::placeholders::error,
 				      boost::asio::placeholders::bytes_transferred));
 }
 
-void session::handle_read(const boost::system::error_code& error,
+/* Callback function: on read then format and send response back if successful */
+int session::send_response(const boost::system::error_code& error,
 			  size_t bytes_transferred)
 {
   if (!error)
@@ -44,27 +52,37 @@ void session::handle_read(const boost::system::error_code& error,
       response response_obj(std::to_string(bytes_transferred),
 			    std::string(data_));
       std::string response_msg = response_obj.GetResponse();
+      memset(data_, 0, 1024);
       
-      // write http response to socket
-      boost::asio::async_write(socket_,
-			       boost::asio::buffer(response_msg),
-			       boost::bind(&session::handle_write, this,
-					   boost::asio::placeholders::error));
+      // write response to socket
+      handle_write(response_msg);
+
+      // success exit code
+      return 0;
     }
   else
     {
       delete this;
+      return 1;
     }
 }
 
-void session::handle_write(const boost::system::error_code& error)
+/* Writes response_msg back to socket (called on successfull read) */
+void session::handle_write(std::string response_msg)
+{
+  // write response to socket
+  boost::asio::async_write(socket_,
+			   boost::asio::buffer(response_msg),
+			   boost::bind(&session::loopback_read, this,
+				       boost::asio::placeholders::error));
+}
+
+/* Callback function: after successful write to socket, loop again waiting for message */
+void session::loopback_read(const boost::system::error_code& error)
 {
   if (!error)
     {
-      socket_.async_read_some(boost::asio::buffer(data_, max_length),		   
-			      boost::bind(&session::handle_read, this,
-					  boost::asio::placeholders::error,
-					  boost::asio::placeholders::bytes_transferred));
+      handle_read();
     }
   else
     {

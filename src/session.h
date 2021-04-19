@@ -27,10 +27,11 @@ public:
   void start();
 
 private:
-  void handle_read(const boost::system::error_code& error,
+  void send_response(const boost::system::error_code& error,
       size_t bytes_transferred);
-
-  void handle_write(const boost::system::error_code& error);
+  void handle_read();
+  void handle_write(std::string response_msg);
+  void loopback_read(const boost::system::error_code& error);
 
   tcp::socket socket_;
   enum { max_length = 1024 };
