@@ -5,7 +5,6 @@
 
 class ResponseGeneratorTest : public ::testing::Test {
   protected:
-    response res;
 };
 
 
@@ -16,8 +15,7 @@ class ResponseGeneratorTest : public ::testing::Test {
 TEST_F(ResponseGeneratorTest, BasicResponse)
 {
   // Set-Up Response Message To Be Sent
-  res.SetData("This is Team Juzang!");
-  res.SetBytesTransferred(std::to_string(20));
+  response res("This is Team Juzang!");
 
   // Get Both Expected/Received Response
   std::string response_gotten = res.GetResponse();

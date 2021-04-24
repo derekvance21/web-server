@@ -37,8 +37,6 @@ int main(int argc, char* argv[])
       return 1;
     }
     
-    std::string config_string = config.ToString();
-    
     // call GetPort function to parse config file and retrieve port number 
     int port_num = config.GetPort();
     if(port_num == -1)
@@ -46,12 +44,13 @@ int main(int argc, char* argv[])
     
     boost::asio::io_service io_service;
     server s(io_service, port_num);
-
+    s.start_accept();
     io_service.run();
   }
   catch (std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << "\n";
+    return 1;
   }
 
   return 0;

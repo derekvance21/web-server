@@ -25,12 +25,12 @@ TEST_F(SessionFixtureTest, BasicSessionTest){
 
   // Write data to socket to simulate client sending message
   boost::asio::async_write(my_session->socket_,
-			   boost::asio::buffer(data, 14),
+			   boost::asio::buffer(data),
 			   [my_session](const boost::system::error_code& e, std::size_t s)
 			   { });
 
   // Get exit code from the send_response function and make sure it is valid (0)
-  int code = my_session->send_response(boost::system::error_code(), 14);
+  int code = my_session->send_response(boost::system::error_code(), 0);
 
   EXPECT_TRUE(code == 0);
 }
@@ -47,12 +47,12 @@ TEST_F(SessionFixtureTest, EmptyMessageSessionTest){
 
   // Write data to socket to simulate client sending message
   boost::asio::async_write(my_session->socket_,
-			   boost::asio::buffer(data, 1),
+			   boost::asio::buffer(data),
 			   [my_session](const boost::system::error_code& e, std::size_t s)
 			   { });
 
   // Get exit code from the send_response function and make sure it is valid (0)
-  int code = my_session->send_response(boost::system::error_code(), 1);
+  int code = my_session->send_response(boost::system::error_code(), 0);
 
   EXPECT_TRUE(code == 0);
 }
@@ -70,12 +70,12 @@ TEST_F(SessionFixtureTest, MoreThanMaxMessageSessionTest){
 
   // Write data to socket to simulate client sending message
   boost::asio::async_write(my_session->socket_,
-			   boost::asio::buffer(data, 2000),
+			   boost::asio::buffer(data),
 			   [my_session](const boost::system::error_code& e, std::size_t s)
 			   { });
 
   // Get exit code from the send_response function and make sure it is valid (0)
-  int code = my_session->send_response(boost::system::error_code(), 2000);
+  int code = my_session->send_response(boost::system::error_code(), 0);
 
   EXPECT_TRUE(code == 0);
 }
@@ -89,7 +89,7 @@ TEST_F(SessionFixtureTest, ErrorLoopBackSessionTest){
 
 
   // Get exit code from the send_response function and make sure it is valid (0)
-  int code = my_session->loopback_read(make_error_code(boost::system::errc::not_connected));
+  int code = my_session->loopback_read(make_error_code(boost::system::errc::not_connected), 0);
 
   EXPECT_TRUE(code == 1);
 }
@@ -103,7 +103,7 @@ TEST_F(SessionFixtureTest, SuccessLoopBackSessionTest){
 
 
   // Get exit code from the send_response function and make sure it is valid (0)
-  int code = my_session->loopback_read(make_error_code(boost::system::errc::success));
+  int code = my_session->loopback_read(make_error_code(boost::system::errc::success), 0);
 
   EXPECT_TRUE(code == 0);
 }
@@ -121,12 +121,12 @@ TEST_F(SessionFixtureTest, ErrorResponseSessionTest){
 
   // Write data to socket to simulate client sending message
   boost::asio::async_write(my_session->socket_,
-			   boost::asio::buffer(data, 20),
+			   boost::asio::buffer(data),
 			   [my_session](const boost::system::error_code& e, std::size_t s)
 			   { });
 
   // Get exit code from the send_response function and make sure it is valid (0)
-  int code = my_session->send_response(make_error_code(boost::system::errc::not_connected), 20);
+  int code = my_session->send_response(make_error_code(boost::system::errc::not_connected), 0);
 
   EXPECT_TRUE(code == 1);
 }

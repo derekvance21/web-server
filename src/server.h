@@ -22,19 +22,15 @@ using boost::asio::ip::tcp;
 class server
 {
 public:
-  server(boost::asio::io_service& io_service, short port, bool test_flag);
-  server(boost::asio::io_service& io_service, short port);
+  server(boost::asio::io_service& io_service, short port, bool test_flag = false );
   int start_accept();
-  //int get_error();
   int handle_accept(session* new_session, const boost::system::error_code& error);
-  int get_error();
   
 private:
   
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
-  int accept_error;
-  int test_flag;
+  bool test_flag;
 };
 
 #endif

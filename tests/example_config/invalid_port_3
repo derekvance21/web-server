@@ -1,0 +1,4 @@
+port eighty;
+location /static {
+  static /path/to/directory;
+}

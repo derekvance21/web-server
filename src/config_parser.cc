@@ -156,7 +156,7 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
       case TOKEN_STATE_DOUBLE_QUOTE_ESCAPED:	
         *value += c;	
         state = TOKEN_STATE_DOUBLE_QUOTE;
-	continue;
+	      continue;
       case TOKEN_STATE_TOKEN_TYPE_COMMENT:	
         if (c == '\n' || c == '\r') {	
           return TOKEN_TYPE_COMMENT;	
