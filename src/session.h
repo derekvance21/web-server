@@ -14,13 +14,18 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <map>
 
 using boost::asio::ip::tcp;
 
 class session
 {
 public:
-  session(boost::asio::io_service& io_service, bool test_flag = false);
+  typedef std::map<std::string, std::string> loc_map_type;
+
+  session(boost::asio::io_service& io_service, 
+          bool test_flag = false,
+          const loc_map_type& loc_map = loc_map_type());
   int send_response(const boost::system::error_code& error, size_t bytes_transferred);
   int loopback_read(const boost::system::error_code& error, size_t bytes_transferred);
   void handle_read();
@@ -30,6 +35,7 @@ public:
 
 
 private:
+  loc_map_type loc_map_;
   bool test_flag;
   enum { max_length = 1024 };
   char data_[max_length];

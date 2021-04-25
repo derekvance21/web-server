@@ -12,15 +12,17 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <sstream>
+#include <map>
 #include "session.h"
 #include "response.h"
-#include <sstream>
+#include "request.h"
 
 using boost::asio::ip::tcp;
 
 
-session::session(boost::asio::io_service& io_service, bool test_flag)
-  : socket_(io_service), test_flag(test_flag) {}
+session::session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
+  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map) {}
 
 
 /* Main function: starts off the reading from client */
@@ -43,11 +45,40 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
 {
   if (!error)
     {
-      // format response
+      // old way of doing it
       std::string data_string(data_);
       response response_obj(data_string);
+      // in new way, response_msg should be default initialized to 404 not found response
+      // that way, if the for loop below didn't get any matches, we can just write with response_msg
       std::string response_msg = response_obj.GetResponse();
       memset(data_, 0, 1024);
+
+      // new way - shouldn't break above
+      // THIS DOESN'T ACTUALLY DO ANYTHING - IT'S BOILERPLATE CODE
+      Request req(data_string);
+      req.ExtractPath();
+      std::string req_path = req.GetPath();
+      std::cerr << loc_map_.size() << "\n";
+      for (std::map<std::string,std::string>::iterator iter = loc_map_.begin(); iter != loc_map_.end(); iter++) {
+        std::string loc = iter->first;
+        std::string val = iter->second; // could be $echo for echoing or a path for static
+        // if req_path starts with loc - there's a match
+        std::cerr << loc << "\n";
+        std::cerr << val << "\n";
+        int pos = req_path.find(loc);
+        if (pos != 0) {
+          continue;
+        }
+        if (val == "$echo") {
+          // Iniitalize an EchoReqeust object, assign response_msg to GetResponse(), break
+          break;
+        }
+        std::string file_path = req_path.substr(loc.length(), std::string::npos);
+        // Initialize a StaticRequest object, assign response_msg to GetResponse(), break
+        break;
+      }
+
+
       
       // write response to socket
       handle_write(response_msg);

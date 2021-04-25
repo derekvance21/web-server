@@ -16,16 +16,23 @@ class RequestTest : public ::testing::Test {
 /* ---------------- */
 /* Unit Tests Below */
 /* ---------------- */
+TEST_F(RequestTest, EmptyTest)
+{
+  Request request("");
+  int code = request.ExtractPath();
+  EXPECT_TRUE(request.GetPath() == "");
+}
+
 TEST_F(RequestTest, BasicParsingTest)
 {
-  Request* request = new Request("GET /hello.html HTTP/1.1\r\n\r\n<html>Hello, World!</html>");
+  Request request("GET /hello.html HTTP/1.1\r\n\r\n<html>Hello, World!</html>");
   
-  int code = request->ParseRequest();
+  int code = request.ParseRequest();
   
-  std::string method = request->GetMethod();
-  std::string path = request->GetPath();
-  std::string version = request->GetVersion();
-  std::string body = request->GetBody();
+  std::string method = request.GetMethod();
+  std::string path = request.GetPath();
+  std::string version = request.GetVersion();
+  std::string body = request.GetBody();
 
   EXPECT_TRUE(method == "GET");
   EXPECT_TRUE(path == "/hello.html");

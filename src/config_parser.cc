@@ -13,6 +13,7 @@
 #include <stack>	
 #include <string>	
 #include <vector>	
+#include <map>
 #include "config_parser.h"
 #include <boost/asio.hpp>
 
@@ -50,8 +51,8 @@ int NginxConfig::GetPort() {
   return atoi(port.c_str());
 }
 
-std::unordered_map<std::string, std::string> NginxConfig::GetLocationHandlers() {
-  std::unordered_map<std::string, std::string> location_handlers = {{"/", "echo"}};
+std::map<std::string, std::string> NginxConfig::GetLocationMap() {
+  std::map<std::string, std::string> location_handlers;
   for (const auto& statement : statements_) {
     if (statement->tokens_.size() == 2 && 
         statement->tokens_.front() == "location" &&
@@ -62,13 +63,12 @@ std::unordered_map<std::string, std::string> NginxConfig::GetLocationHandlers() 
           std::string target = handler_statement->tokens_.front();
           if(target == "static") {
             if (handler_statement->tokens_.size() == 2) {
-              // the value here should be a RequestHandler object; for now, I'm leaving it as the path
+              // last token (.back()) is a path
               location_handlers[location] = handler_statement->tokens_.back();
               break;
             } 
           } else if (target == "echo") {
-            // this should not be like that
-            location_handlers[location] = "echo";
+            location_handlers[location] = "$echo";
             break;
           }
         }

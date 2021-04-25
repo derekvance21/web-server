@@ -24,12 +24,12 @@ server::server(boost::asio::io_service& io_service, NginxConfig& config, bool te
 	  acceptor_(io_service, tcp::endpoint(tcp::v4(), config.GetPort())),
 	  test_flag(test_flag)
 {
-  config.GetLocationHandlers();
+  loc_map_ = config.GetLocationMap();
 }
 
 int server::start_accept()
 {
-  session* new_session = new session(io_service_);
+  session* new_session = new session(io_service_, false, loc_map_);
   acceptor_.async_accept(new_session->socket_,
 			 boost::bind(&server::handle_accept, this, new_session,
 				     boost::asio::placeholders::error));

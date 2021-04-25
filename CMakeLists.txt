@@ -37,7 +37,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # TODO(!): Update name and srcs
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
-add_library(session_lib src/session.cc src/response.cc)
+add_library(session_lib src/session.cc src/response.cc src/request.cc)
 add_library(response_lib src/response.cc)
 add_library(request_lib src/request.cc)
 

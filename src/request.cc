@@ -8,8 +8,13 @@
 
 
 
-Request::Request(const std::string& request) : request_(request)
-{}
+Request::Request(const std::string& request) 
+  : request_(request)
+{
+  // std::cerr << "parsing request: " << request << "\n";
+  // ParseRequest();
+  // std::cerr << "done parsing request" << "\n";
+}
 
 /* Transform request string into request data structure */
 int Request::ParseRequest()
@@ -32,26 +37,38 @@ int Request::ParseRequest()
 /* Extract the method (i.e., GET/POST etc.) */
 int Request::ExtractMethod()
 {
-  int first_ws = request_.find(' ', 0);
-  method_ = request_.substr(0, first_ws);
+  try {
+    int first_ws = request_.find(' ', 0);
+    method_ = first_ws == std::string::npos ? "" : request_.substr(0, first_ws);
+    return 0;
+  } catch (int error) {
+    method_ = "";
+    return 1;
+  }
 
-  return 0;
 }
 
 /* Extract the path (i.e., path) */
 int Request::ExtractPath()
 {
-  int first_ws = request_.find(' ', 0);
-  int second_ws = request_.find(' ', first_ws+2);
-  
-  path_ = std::string(request_.begin() + first_ws + 1, request_.begin() + second_ws);
+  try {
+    int first_ws = request_.find(' ', 0);
+    int second_ws = request_.find(' ', first_ws+2);
+    std::cerr << first_ws << " " << second_ws << "\n";
+    // path_ = std::string(request_.begin() + first_ws + 1, request_.begin() + second_ws);
+    path_ = request_.substr(first_ws + 1, second_ws - first_ws - 1);
+    return 0;
+  } catch (int error) {
+    path_ = "";
+    return 1;
+  }
 
-  return 0;
 }
 
 /* Extract HTTP version (i.e., HTTP\1.1) */
 int Request::ExtractVersion()
 {
+  try {
   int first_ws = request_.find(' ', 0);
   int second_ws = request_.find(' ', first_ws+2);
   int first_rn = request_.find("\r\n", 0);
@@ -59,6 +76,10 @@ int Request::ExtractVersion()
   version_ = std::string(request_.begin() + second_ws + 1, request_.begin() + first_rn);
 
   return 0;
+  } catch (int error) {
+    version_ = "";
+    return 1;
+  }
 }
 
 

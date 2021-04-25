@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <map>
 
 class NginxConfig;
 
@@ -24,7 +24,7 @@ class NginxConfig {
   // Take the string of a config file and parse the file to return the 
   // port defined in the file.
   int GetPort();
-  std::unordered_map<std::string, std::string> GetLocationHandlers();
+  std::map<std::string, std::string> GetLocationMap();
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 };

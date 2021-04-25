@@ -15,6 +15,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <map>
 #include "session.h"
 
 using boost::asio::ip::tcp;
@@ -29,7 +30,9 @@ public:
   int handle_accept(session* new_session, const boost::system::error_code& error);
   
 private:
-  
+  // location map - key is the location set by config, value is the location to fetch those resources from
+  // special case: if value is $echo, then use echoing response 
+  std::map<std::string, std::string> loc_map_;
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
   bool test_flag;

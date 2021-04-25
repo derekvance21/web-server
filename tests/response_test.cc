@@ -23,5 +23,7 @@ TEST_F(ResponseGeneratorTest, BasicResponse)
 
   // Both Should Be Equal
   EXPECT_TRUE(response_gotten == response_expect);
+
+  EXPECT_TRUE(1);
 }
 

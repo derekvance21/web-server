@@ -1,4 +1,4 @@
 port 8080;
 location /static {
-  static directory/to/static/assets/;
+  static /static/asset/directory;
 }
