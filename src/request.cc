@@ -7,7 +7,6 @@
 #include "request.h"
 
 
-
 Request::Request(const std::string& request) 
   : request_(request)
 {
@@ -37,48 +36,54 @@ int Request::ParseRequest()
 /* Extract the method (i.e., GET/POST etc.) */
 int Request::ExtractMethod()
 {
-  try {
-    int first_ws = request_.find(' ', 0);
-    method_ = first_ws == std::string::npos ? "" : request_.substr(0, first_ws);
-    return 0;
-  } catch (int error) {
+  int first_ws = request_.find(' ', 0);
+
+  // Error handling
+  if (first_ws == std::string::npos) {
     method_ = "";
     return 1;
   }
-
+    
+  method_ = request_.substr(0, first_ws);
+  
+  return 0;
 }
 
 /* Extract the path (i.e., path) */
 int Request::ExtractPath()
 {
-  try {
-    int first_ws = request_.find(' ', 0);
-    int second_ws = request_.find(' ', first_ws+2);
-    // path_ = std::string(request_.begin() + first_ws + 1, request_.begin() + second_ws);
-    path_ = request_.substr(first_ws + 1, second_ws - first_ws - 1);
-    return 0;
-  } catch (int error) {
+  int first_ws = request_.find(' ', 0);
+  int second_ws = request_.find(' ', first_ws+2);
+
+  // Error handling
+  if (first_ws == std::string::npos || second_ws == std::string::npos) {
     path_ = "";
     return 1;
   }
+    
+  path_ = std::string(request_.begin() + first_ws + 1, request_.begin() + second_ws);
 
+  return 0;
 }
 
 /* Extract HTTP version (i.e., HTTP\1.1) */
 int Request::ExtractVersion()
 {
-  try {
   int first_ws = request_.find(' ', 0);
   int second_ws = request_.find(' ', first_ws+2);
   int first_rn = request_.find("\r\n", 0);
+
+  // Error handling
+  if (first_ws == std::string::npos ||
+      second_ws == std::string::npos ||
+      first_rn == std::string::npos) {
+    version_ = "";
+    return 1;
+  }
   
   version_ = std::string(request_.begin() + second_ws + 1, request_.begin() + first_rn);
 
   return 0;
-  } catch (int error) {
-    version_ = "";
-    return 1;
-  }
 }
 
 
@@ -89,7 +94,9 @@ int Request::ExtractHeaders()
   int last_rnrn = request_.find("\r\n\r\n", 0);
 
   // No Headers provided 
-  if (first_rn == last_rnrn)
+  if (first_rn == last_rnrn ||
+      first_rn == std::string::npos ||
+      last_rnrn == std::string::npos)
     return 1;
   
   // Gets the blocks of headers (only) as a string to be transformed into a map
@@ -103,6 +110,7 @@ int Request::ExtractHeaders()
   // Loop through the headers and get whatever before ": " as a header type (i.e, host)
   // and the data between ": " and "\r\n" will be its header content
   // Ex: "host: ucla.edu\r\n" becomes {{"host": "ucla.edu"}}
+  
   for (int i = 0; i < headers.size(); i++){
 
     if (!switch_flag)
@@ -133,14 +141,15 @@ int Request::ExtractBody()
 {
   int start_body = request_.find("\r\n\r\n", 0);
 
-  try{
-    body_ = request_.substr(start_body+4);
-    return 0;
-    
-  } catch (int error) {
+  // Error handling
+  if (start_body == std::string::npos) {
     body_ = "";
     return 1;
   }
+  
+  body_ = request_.substr(start_body+4);
+  return 0;
+
 }
 
 

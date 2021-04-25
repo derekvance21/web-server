@@ -9,18 +9,28 @@ using boost::asio::ip::tcp;
 
 class RequestTest : public ::testing::Test {
   protected:   
-    
+
 };
 
 
 /* ---------------- */
 /* Unit Tests Below */
 /* ---------------- */
-TEST_F(RequestTest, EmptyTest)
+TEST_F(RequestTest, EmptyParsingTest)
 {
   Request request("");
-  int code = request.ExtractPath();
-  EXPECT_TRUE(request.GetPath() == "");
+  
+  int code = request.ParseRequest();
+
+  std::string method = request.GetMethod();
+  std::string path = request.GetPath();
+  std::string version = request.GetVersion();
+  std::string body = request.GetBody();
+
+  EXPECT_TRUE(method == "");
+  EXPECT_TRUE(path == "");
+  EXPECT_TRUE(version == "");
+  EXPECT_TRUE(body == "");
 }
 
 TEST_F(RequestTest, BasicParsingTest)
