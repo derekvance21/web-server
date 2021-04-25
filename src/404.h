@@ -1,4 +1,4 @@
-#ifndef ECHO_H
+#ifndef NOT_FOUND_H
 #define NOT_FOUND_H
 
 #include <string>
@@ -7,7 +7,6 @@
 class NotFoundResponse : public Response
 {
   public:
-    NotFoundResponse();
     std::string GetResponse();
 };
 

@@ -54,7 +54,6 @@ int Request::ExtractPath()
   try {
     int first_ws = request_.find(' ', 0);
     int second_ws = request_.find(' ', first_ws+2);
-    std::cerr << first_ws << " " << second_ws << "\n";
     // path_ = std::string(request_.begin() + first_ws + 1, request_.begin() + second_ws);
     path_ = request_.substr(first_ws + 1, second_ws - first_ws - 1);
     return 0;

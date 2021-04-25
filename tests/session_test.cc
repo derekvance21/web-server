@@ -23,6 +23,8 @@ TEST_F(SessionFixtureTest, BasicSessionTest){
   // Data to be tested
   std::string data = "Hello server!";
 
+  // This is misleading - this write isn't ever read by session - 
+  // send_response will be using an empty string as data_ 
   // Write data to socket to simulate client sending message
   boost::asio::async_write(my_session->socket_,
 			   boost::asio::buffer(data),

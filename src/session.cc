@@ -50,27 +50,33 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
     {
       // old way of doing it
       std::string data_string(data_);
-      EchoResponse response_obj(data_string);
+      // EchoResponse response_obj(data_string);
       // in new way, response_msg should be default initialized to 404 not found response
       // that way, if the for loop below didn't get any matches, we can just write with response_msg
-      std::string response_msg = response_obj.GetResponse();
+      // std::string response_msg = response_obj.GetResponse();
       memset(data_, 0, 1024);
 
       // new way - shouldn't break above
-      // THIS DOESN'T ACTUALLY DO ANYTHING - IT'S BOILERPLATE CODE
+      // THIS DOESN'T ACTUALLY DO ANYTHING YET - IT'S BOILERPLATE CODE
+      NotFoundResponse res_404;
+      std::string response_msg = res_404.GetResponse();
       Request req(data_string);
       req.ExtractPath();
       std::string req_path = req.GetPath();
       for (std::map<std::string,std::string>::iterator iter = loc_map_.begin(); iter != loc_map_.end(); iter++) {
         std::string loc = iter->first;
         std::string val = iter->second; // could be $echo for echoing or a path for static
+        // std::cerr << loc << ' ' << val << "\n";
         // if req_path starts with loc - there's a match
         int pos = req_path.find(loc);
         if (pos != 0) {
+          // if loc wasn't at the start of req_path - not a match
           continue;
         }
         if (val == "$echo") {
-          // Iniitalize an EchoReqeust object, assign response_msg to GetResponse(), break
+          // Iniitalize an EchoRequest object, assign response_msg to GetResponse(), break
+          EchoResponse echo_req(data_string);
+          response_msg = echo_req.GetResponse();
           break;
         }
         std::string file_path = req_path.substr(loc.length(), std::string::npos);
@@ -78,8 +84,6 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
         break;
       }
 
-
-      
       // write response to socket
       handle_write(response_msg);
 
