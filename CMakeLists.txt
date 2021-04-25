@@ -41,10 +41,11 @@ add_library(session_lib src/session.cc src/request.cc src/echo.cc src/404.cc src
 add_library(echo_lib src/echo.cc)
 add_library(request_lib src/request.cc)
 add_library(logger_lib src/logger.cc)
+add_library(static_handler_lib src/static_handler.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     
-target_link_libraries(webserver pthread server_lib request_lib session_lib config_parser_lib logger_lib
+target_link_libraries(webserver pthread server_lib request_lib session_lib static_handler_lib config_parser_lib logger_lib
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
@@ -61,9 +62,14 @@ add_executable(session_test tests/session_test.cc)
 target_link_libraries(session_test session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
+
 add_executable(server_test tests/server_test.cc)                   
-target_link_libraries(server_test config_parser_lib server_lib session_lib gtest_main logger_lib
+target_link_libraries(server_test config_parser_lib server_lib  static_handler_lib session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+		    
+add_executable(static_handler_test tests/static_handler_test.cc)
+target_link_libraries(static_handler_test static_handler_lib gtest_main)
+
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -71,11 +77,12 @@ gtest_discover_tests(echo_response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME IntegrationTest 
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh 
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Update with target/test targets
-include(cmake/CodeCoverageReportConfig.cmake)       #response_lib
-generate_coverage_report(TARGETS webserver server_lib request_lib session_lib logger_lib TESTS config_parser_test echo_response_test request_test session_test server_test)
+include(cmake/CodeCoverageReportConfig.cmake)     
+generate_coverage_report(TARGETS webserver server_lib request_lib  static_handler_lib session_lib logger_lib TESTS config_parser_test static_handler_test echo_response_test request_test session_test server_test)

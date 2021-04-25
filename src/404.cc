@@ -15,6 +15,7 @@ std::string NotFoundResponse::GetResponse()
     response_msg << body << "\r\n";
 
     return response_msg.str();
+    
   } catch(int error) {
     return "";
   }
