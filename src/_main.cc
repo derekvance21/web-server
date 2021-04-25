@@ -13,7 +13,6 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "server.h"
-#include "session.h"
 #include "config_parser.h"
 #include <string>
 
@@ -37,13 +36,8 @@ int main(int argc, char* argv[])
       return 1;
     }
     
-    // call GetPort function to parse config file and retrieve port number 
-    int port_num = config.GetPort();
-    if(port_num == -1)
-      return 1;
-    
     boost::asio::io_service io_service;
-    server s(io_service, port_num);
+    server s(io_service, config);
     s.start_accept();
     io_service.run();
   }

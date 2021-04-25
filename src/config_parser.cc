@@ -50,6 +50,35 @@ int NginxConfig::GetPort() {
   return atoi(port.c_str());
 }
 
+std::unordered_map<std::string, std::string> NginxConfig::GetLocationHandlers() {
+  std::unordered_map<std::string, std::string> location_handlers = {{"/", "echo"}};
+  for (const auto& statement : statements_) {
+    if (statement->tokens_.size() == 2 && 
+        statement->tokens_.front() == "location" &&
+        statement->child_block_.get() != nullptr) {
+      std::string location = statement->tokens_.back();
+      for (const auto& handler_statement : statement->child_block_->statements_) {
+        if (!handler_statement->tokens_.empty()) {
+          std::string target = handler_statement->tokens_.front();
+          if(target == "static") {
+            if (handler_statement->tokens_.size() == 2) {
+              // the value here should be a RequestHandler object; for now, I'm leaving it as the path
+              location_handlers[location] = handler_statement->tokens_.back();
+              break;
+            } 
+          } else if (target == "echo") {
+            // this should not be like that
+            location_handlers[location] = "echo";
+            break;
+          }
+        }
+      }
+    }
+  }
+  return location_handlers;
+}
+
+
 std::string NginxConfig::ToString(int depth) {	
   std::string serialized_config;	
   for (const auto& statement : statements_) {	
@@ -57,6 +86,7 @@ std::string NginxConfig::ToString(int depth) {
   }	
   return serialized_config;	
 }	
+
 std::string NginxConfigStatement::ToString(int depth) {	
   std::string serialized_statement;	
   for (int i = 0; i < depth; ++i) {	

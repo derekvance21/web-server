@@ -14,15 +14,18 @@
 #include <boost/asio.hpp>
 #include "server.h"
 #include "session.h"
+#include "config_parser.h"
 
 using boost::asio::ip::tcp;
 
 // overloaded constructor that doesnt start_accept
-server::server(boost::asio::io_service& io_service, short port, bool test_flag)
+server::server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag)
 	: io_service_(io_service),
-	  acceptor_(io_service, tcp::endpoint(tcp::v4(), port)),
+	  acceptor_(io_service, tcp::endpoint(tcp::v4(), config.GetPort())),
 	  test_flag(test_flag)
-{}
+{
+  config.GetLocationHandlers();
+}
 
 int server::start_accept()
 {

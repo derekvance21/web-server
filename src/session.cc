@@ -13,7 +13,6 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
-#include "server.h"
 #include "response.h"
 #include <sstream>
 

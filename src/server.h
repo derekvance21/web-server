@@ -19,10 +19,12 @@
 
 using boost::asio::ip::tcp;
 
+class NginxConfig;
+
 class server
 {
 public:
-  server(boost::asio::io_service& io_service, short port, bool test_flag = false );
+  server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag = false );
   int start_accept();
   int handle_accept(session* new_session, const boost::system::error_code& error);
   

@@ -1,9 +1,12 @@
 // An nginx config file parser.
+#ifndef _config_parser_h
+#define _config_parser_h
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 class NginxConfig;
 
@@ -21,6 +24,7 @@ class NginxConfig {
   // Take the string of a config file and parse the file to return the 
   // port defined in the file.
   int GetPort();
+  std::unordered_map<std::string, std::string> GetLocationHandlers();
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 };
@@ -63,3 +67,4 @@ class NginxConfigParser {
   TokenType ParseToken(std::istream* input, std::string* value);
 };
 
+#endif

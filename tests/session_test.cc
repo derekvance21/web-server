@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../src/session.h"
+#include "session.h"
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 

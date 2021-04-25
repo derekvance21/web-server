@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "../src/response.h"
+#include "response.h"
 
 #include <string>
 
