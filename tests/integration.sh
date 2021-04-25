@@ -3,8 +3,19 @@ DIR=`dirname $0`
 PWD=`pwd`
 PORT=8080
 
-function kill_server() {
+function cleanup() {
+  rm -f tmp.out tmp.config
   kill $! > /dev/null 2>&1
+}
+
+function test() {
+  rm -f tmp.out
+  curl -sSi -m 2 -o tmp.out $1
+  diff -w tmp.out $2
+  if [[ $? -ne 0 ]]; then
+    cleanup
+    exit 1
+  fi
 }
 
 if [[ ! $PWD =~ $DIR$ ]]; then
@@ -20,25 +31,8 @@ if [[ $EXIT -ne 0 ]]; then
   exit $EXIT
 fi
 
-curl -sSi -m 2 http://localhost:$PORT/echo -o tmp.out
-diff -w regression_echo.out tmp.out
-EXIT=$?
-if [[ $EXIT -ne 0 ]]; then
-  echo "http://localhost:${PORT}/ failed with code: ${EXIT}"
-  kill_server
-  exit $EXIT
-fi
-rm -f tmp.out
-
-curl -sSi -m 2 http://localhost:$PORT/bad/location -o tmp.out
-diff -w regression_404.out tmp.out
-EXIT=$?
-if [[ $EXIT -ne 0 ]]; then
-  echo "http://localhost:${PORT}/ failed with code: ${EXIT}"
-  kill_server
-  exit $EXIT
-fi
-
-rm -f tmp.config tmp.out
-kill_server
-exit $EXIT
+# testing echo
+test "http://localhost:$PORT/echo" regression_echo.out
+test "http://localhost:$PORT/bad/location" regression_404.out
+cleanup
+exit 0
