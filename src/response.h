@@ -4,11 +4,10 @@
 #include <string>
 #include <boost/asio.hpp>
 
-class response
+class Response
 {
   public:
-    response(const std::string& data);
-    std::string GetResponse();
+    virtual std::string GetResponse() = 0;
 
   private:
     std::string data;

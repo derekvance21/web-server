@@ -16,6 +16,9 @@
 #include <map>
 #include "session.h"
 #include "response.h"
+#include "echo.h"
+#include "static.h"
+#include "404.h"
 #include "request.h"
 
 using boost::asio::ip::tcp;
@@ -47,7 +50,7 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
     {
       // old way of doing it
       std::string data_string(data_);
-      response response_obj(data_string);
+      EchoResponse response_obj(data_string);
       // in new way, response_msg should be default initialized to 404 not found response
       // that way, if the for loop below didn't get any matches, we can just write with response_msg
       std::string response_msg = response_obj.GetResponse();
@@ -58,13 +61,10 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
       Request req(data_string);
       req.ExtractPath();
       std::string req_path = req.GetPath();
-      std::cerr << loc_map_.size() << "\n";
       for (std::map<std::string,std::string>::iterator iter = loc_map_.begin(); iter != loc_map_.end(); iter++) {
         std::string loc = iter->first;
         std::string val = iter->second; // could be $echo for echoing or a path for static
         // if req_path starts with loc - there's a match
-        std::cerr << loc << "\n";
-        std::cerr << val << "\n";
         int pos = req_path.find(loc);
         if (pos != 0) {
           continue;
@@ -74,7 +74,7 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
           break;
         }
         std::string file_path = req_path.substr(loc.length(), std::string::npos);
-        // Initialize a StaticRequest object, assign response_msg to GetResponse(), break
+        // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
         break;
       }
 

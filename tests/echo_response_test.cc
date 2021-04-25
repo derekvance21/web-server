@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "response.h"
+#include "echo.h"
 
 #include <string>
 
@@ -15,7 +15,7 @@ class ResponseGeneratorTest : public ::testing::Test {
 TEST_F(ResponseGeneratorTest, BasicResponse)
 {
   // Set-Up Response Message To Be Sent
-  response res("This is Team Juzang!");
+  EchoResponse res("This is Team Juzang!");
 
   // Get Both Expected/Received Response
   std::string response_gotten = res.GetResponse();
