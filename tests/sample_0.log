@@ -1,8 +1,12 @@
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.346062]: 
-          [info]: Server initializaing, port: 8080
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.362382]: 
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.524505]: 
+          [info]: Server initializaing, port: 8080;
+location /echo {
+  echo;
+}
+
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.537193]: 
           [info]: Reading data...
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.364562]: 
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.538330]: 
           [info]: Writing data [ECHO]:
 HTTP/1.1 200 OK
 Content-Type: text/plain
@@ -14,11 +18,13 @@ User-Agent: curl/7.68.0
 Accept: */*
 
 
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.366035]: 
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.539565]: 
           [info]: Reading data...
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.404906]: 
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.548989]: 
+          [info]: Session Terminating.
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.588870]: 
           [info]: Reading data...
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.406417]: 
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.589924]: 
           [info]: Writing data [STATIC]:
 HTTP/1.1 404 Not Found
 Content-Type: text/plain
@@ -26,5 +32,7 @@ Content-Length: 42
 
 This requested resource could not be found
 
-Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.407886]: 
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.590855]: 
           [info]: Reading data...
+Thread [0x00007facc969f740] @ time [2021-04-26 07:08:55.595357]: 
+          [info]: Session Terminating.

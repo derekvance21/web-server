@@ -69,6 +69,7 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
       req.ExtractPath();
       std::string req_path = req.GetPath();
       bool echo = false;
+      
       for (std::map<std::string,std::string>::iterator iter = loc_map_.begin(); iter != loc_map_.end(); iter++) {
         std::string loc = iter->first;
         std::string val = iter->second; // could be $echo for echoing or a path for static

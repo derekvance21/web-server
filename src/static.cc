@@ -14,20 +14,12 @@ StaticResponse::StaticResponse(const std::string& fullpath)
 /* Main Function: Format the response based on client request */
 std::string StaticResponse::GetResponse()
 {
-  // Get the filename (i.e., file.txt)
-  std::size_t last_slash = fullpath_.find_last_of("/\\");
-  if (last_slash == std::string::npos)
-    return "";
-  
-  std::string filename = fullpath_.substr(last_slash+1);
-  
-
   // Get the extension of the file (i.e., txt)
-  std::size_t dot = filename.find_last_of(".");
-  if (dot == std::string::npos)
-    return "";
+  std::size_t dot = fullpath_.find_last_of(".");
+  std::string extension = "";
   
-  std::string extension = filename.substr(dot+1);
+  if (dot != std::string::npos)
+    extension = fullpath_.substr(dot+1);
 
   // Get the file content (reading its data)
   std::string file_content;
@@ -95,6 +87,10 @@ int StaticResponse::ReadFile(std::string fullpath, std::string& file_content) {
 
   std::ifstream file(fullpath, std::ios::in | std::ios::binary);
 
+  // Check if file or dir
+  if( !file.good() )
+    return 1;
+  
   // Error handling (if file doesn't exist)
   if ( ! file.is_open() )
     return 1;
