@@ -28,8 +28,8 @@ add_subdirectory(/usr/src/googletest googletest)
 
 # Enable Boost
 # Use static libraries so binaries can be deployed without a full boost install
-set(Boost_USE_STATIC_LIBS ON)
-find_package(Boost 1.50 REQUIRED COMPONENTS system)
+set(Boost_USE_STATIC_LIBS ON)             # TODO: not sure if log_setup is supposed to be included here
+find_package(Boost 1.50 REQUIRED COMPONENTS log_setup log system filesystem regex)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -37,14 +37,15 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 # TODO(!): Update name and srcs
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
-add_library(session_lib src/session.cc src/response.cc src/request.cc src/echo.cc src/404.cc src/static.cc)
+add_library(session_lib src/session.cc src/request.cc src/echo.cc src/404.cc src/static.cc)
 add_library(echo_lib src/echo.cc)
-add_library(response_lib src/response.cc)
 add_library(request_lib src/request.cc)
+add_library(logger_lib src/logger.cc)
 
 # TODO(!): Update executable name, srcs, and deps
-add_executable(webserver src/_main.cc)
-target_link_libraries(webserver Boost::system pthread server_lib response_lib request_lib session_lib config_parser_lib)
+add_executable(webserver src/_main.cc)     
+target_link_libraries(webserver pthread server_lib request_lib session_lib config_parser_lib logger_lib
+                            Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
 add_executable(config_parser_test tests/config_parser_test.cc)
@@ -57,10 +58,12 @@ add_executable(request_test tests/request_test.cc)
 target_link_libraries(request_test request_lib gtest_main)
 
 add_executable(session_test tests/session_test.cc)
-target_link_libraries(session_test session_lib gtest_main)
+target_link_libraries(session_test session_lib gtest_main logger_lib
+                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
-add_executable(server_test tests/server_test.cc)
-target_link_libraries(server_test config_parser_lib server_lib session_lib response_lib gtest_main)
+add_executable(server_test tests/server_test.cc)                   
+target_link_libraries(server_test config_parser_lib server_lib session_lib gtest_main logger_lib
+                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -74,5 +77,5 @@ add_test(NAME IntegrationTest
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Update with target/test targets
-include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS webserver server_lib response_lib request_lib session_lib TESTS config_parser_test response_test request_test session_test server_test)
+include(cmake/CodeCoverageReportConfig.cmake)       #response_lib
+generate_coverage_report(TARGETS webserver server_lib request_lib session_lib logger_lib TESTS config_parser_test echo_response_test request_test session_test server_test)

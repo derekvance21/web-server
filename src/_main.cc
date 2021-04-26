@@ -14,6 +14,7 @@
 #include <boost/asio.hpp>
 #include "server.h"
 #include "config_parser.h"
+#include "logger.h"
 #include <string>
 
 using boost::asio::ip::tcp;
@@ -22,10 +23,14 @@ int main(int argc, char* argv[])
 {
   try
   {
+    // set up logging
+    Logger* instance = Logger::getInstance();
+
     if (argc != 2)
     {
-     std::cerr << "Usage: webserver <path to config file>\n"; 
-     return 1;
+      std::cerr << "Usage: webserver <path to config file>\n";
+      instance->log_error("Usage: webserver <path to config file>\n");
+      return 1;
     }
     
     NginxConfigParser config_parser;
@@ -33,6 +38,7 @@ int main(int argc, char* argv[])
     
     if(!config_parser.Parse(argv[1], &config)) {
       std::cerr << "## Error ##: Invalid Config File.\n";
+      instance->log_error("## Error ##: Invalid Config File.\n");
       return 1;
     }
     
@@ -40,6 +46,7 @@ int main(int argc, char* argv[])
     server s(io_service, config);
     s.start_accept();
     io_service.run();
+    instance->log_termination();
   }
   catch (std::exception& e)
   {

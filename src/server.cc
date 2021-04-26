@@ -15,6 +15,7 @@
 #include "server.h"
 #include "session.h"
 #include "config_parser.h"
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 
@@ -25,6 +26,10 @@ server::server(boost::asio::io_service& io_service, NginxConfig& config, bool te
 	  test_flag(test_flag)
 {
   loc_map_ = config.GetLocationMap();
+  
+  // set up logging
+  Logger* instance = Logger::getInstance();
+  instance->log_server_initialization(std::to_string(config.GetPort()));
 }
 
 int server::start_accept()

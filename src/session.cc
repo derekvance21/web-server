@@ -20,6 +20,7 @@
 #include "static.h"
 #include "404.h"
 #include "request.h"
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 
@@ -41,6 +42,9 @@ void session::handle_read()
 			  boost::bind(&session::send_response, this,
 				      boost::asio::placeholders::error,
 				      boost::asio::placeholders::bytes_transferred));
+    // set up logging
+  Logger* instance = Logger::getInstance();
+  instance->log_data_read();
 }
 
 /* Callback function: on read then format and send response back if successful */
@@ -63,6 +67,7 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
       Request req(data_string);
       req.ExtractPath();
       std::string req_path = req.GetPath();
+      bool echo = false;
       for (std::map<std::string,std::string>::iterator iter = loc_map_.begin(); iter != loc_map_.end(); iter++) {
         std::string loc = iter->first;
         std::string val = iter->second; // could be $echo for echoing or a path for static
@@ -77,12 +82,20 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
           // Iniitalize an EchoRequest object, assign response_msg to GetResponse(), break
           EchoResponse echo_req(data_string);
           response_msg = echo_req.GetResponse();
+          echo = true;
           break;
         }
         std::string file_path = req_path.substr(loc.length(), std::string::npos);
         // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
         break;
       }
+
+      // set up logging...
+      Logger* instance = Logger::getInstance();
+      if(echo)
+        instance->log_data_write_echo(response_msg);
+      else
+        instance->log_data_write_static(response_msg);
 
       // write response to socket
       handle_write(response_msg);

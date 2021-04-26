@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     gcovr \ 
     httpie \
     libboost-log-dev \
+    libboost-signals-dev \
     libboost-regex-dev \
     libboost-system-dev \
     libgtest-dev \
