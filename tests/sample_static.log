@@ -1,0 +1,44 @@
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:16:55.089647]: 
+          [info]: Server initializaing, port: 8080;
+location /static {
+  static ../tests/static_folder;
+}
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:17:09.692855]: 
+          [info]: Reading data:
+GET /static/file.txt HTTP/1.1
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:17:09.693057]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 20
+
+This is a txt file!
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:17:28.987347]: 
+          [info]: Reading data:
+GET /static/hello.html HTTP/1.1
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:17:28.987584]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 21
+
+This is Team Juzang!
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:18:12.089058]: 
+          [info]: Reading data:
+GET /notexistent/dog.jpg HTTP/1.1
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:18:12.089251]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 404 Not Found
+Content-Type: text/plain
+Content-Length: 42
+
+This requested resource could not be found
+
+Thread [0x00007fa104e8b740] @ time [2021-04-26 11:18:15.788078]: 
+          [info]: Session Terminating.

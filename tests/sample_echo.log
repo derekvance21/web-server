@@ -1,0 +1,20 @@
+Thread [0x00007f341cd7e740] @ time [2021-04-26 11:14:58.021825]: 
+          [info]: Server initializaing, port: 8080;
+location / {
+  echo;
+}
+
+Thread [0x00007f341cd7e740] @ time [2021-04-26 11:15:09.983006]: 
+          [info]: Reading data:
+GET /echo HTTP/1.1
+
+Thread [0x00007f341cd7e740] @ time [2021-04-26 11:15:09.983162]: 
+          [info]: Writing data [ECHO]:
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 19
+
+GET /echo HTTP/1.1
+
+Thread [0x00007f341cd7e740] @ time [2021-04-26 11:15:56.116132]: 
+          [info]: Session Terminating.
