@@ -10,6 +10,7 @@ StaticResponse::StaticResponse(const std::string& fullpath)
   : fullpath_(fullpath)
 {}
 
+
 /* Main Function: Format the response based on client request */
 std::string StaticResponse::GetResponse()
 {
