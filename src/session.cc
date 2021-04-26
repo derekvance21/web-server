@@ -43,8 +43,6 @@ void session::handle_read()
 				      boost::asio::placeholders::error,
 				      boost::asio::placeholders::bytes_transferred));
     // set up logging
-  Logger* instance = Logger::getInstance();
-  instance->log_data_read();
 }
 
 /* Callback function: on read then format and send response back if successful */
@@ -53,12 +51,8 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
   Logger* instance = Logger::getInstance();
   if (!error)
     {
-      // old way of doing it
       std::string data_string(data_);
-      // EchoResponse response_obj(data_string);
-      // in new way, response_msg should be default initialized to 404 not found response
-      // that way, if the for loop below didn't get any matches, we can just write with response_msg
-      // std::string response_msg = response_obj.GetResponse();
+      instance->log_data_read(data_string);
       memset(data_, 0, 1024);
 
       // new way - shouldn't break above

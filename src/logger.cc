@@ -87,8 +87,8 @@ void Logger::log_server_initialization_failure(std::string message){
     BOOST_LOG_SEV(slg, error) << "Server initializaing failure: " << message;
 }
 
-void Logger::log_data_read(){
-    BOOST_LOG_SEV(slg, info) << "Reading data...\n";
+void Logger::log_data_read(std::string& log_message){
+    BOOST_LOG_SEV(slg, info) << "Reading data:\n" << log_message << "\n";
 }
 
 void Logger::log_data_write_echo(std::string log_message){
