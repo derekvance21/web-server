@@ -1,4 +1,30 @@
-Thread [0x00007f8f51417740] @ time [2021-04-26 05:39:37.496134]: 
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.346062]: 
           [info]: Server initializaing, port: 8080
-Thread [0x00007f8f51417740] @ time [2021-04-26 05:39:37.499916]: 
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.362382]: 
+          [info]: Reading data...
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.364562]: 
+          [info]: Writing data [ECHO]:
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 82
+
+GET /echo HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.366035]: 
+          [info]: Reading data...
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.404906]: 
+          [info]: Reading data...
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.406417]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 404 Not Found
+Content-Type: text/plain
+Content-Length: 42
+
+This requested resource could not be found
+
+Thread [0x00007f0b6f96d740] @ time [2021-04-26 06:02:52.407886]: 
           [info]: Reading data...

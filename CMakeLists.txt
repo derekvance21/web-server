@@ -41,7 +41,7 @@ add_library(session_lib src/session.cc src/request.cc src/echo.cc src/404.cc src
 add_library(echo_lib src/echo.cc)
 add_library(request_lib src/request.cc)
 add_library(logger_lib src/logger.cc)
-add_library(static_lib src/static.cc)
+add_library(static_lib src/404.cc src/static.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     

@@ -70,7 +70,7 @@ TEST_F(StaticHandlerTest, NonExistantFileResponseTest)
   std::string response = "";
   response = static_handler.GetResponse();
 
-  std::string expected_response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 42\r\n\r\nThis requested resource could not be found\n";
+  std::string expected_response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 42\r\n\r\nThis requested resource could not be found\r\n";
 
   EXPECT_TRUE(response == expected_response);
 }
