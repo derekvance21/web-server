@@ -88,6 +88,13 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
         }
         std::string file_path = req_path.substr(loc.length(), std::string::npos);
         // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
+
+	std::string fullpath = val + file_path;
+	std::cerr << fullpath << std::endl;
+
+	StaticResponse static_res(fullpath);
+	response_msg = static_res.GetResponse();
+	
         break;
       }
 

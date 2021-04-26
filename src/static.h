@@ -1,19 +1,27 @@
 #ifndef STATIC_H
 #define STATIC_H
 
+#include <iostream>
 #include <string>
 #include <boost/asio.hpp>
 #include "response.h"
+#include "request.h"
+#include "404.h"
 
 class StaticResponse : public Response
 {
   public:
-    StaticResponse(const std::string& resource_path, const std::string& static_path);
+    StaticResponse(const std::string& fullpath);
     std::string GetResponse();
+    std::string FormatResponse(std::string content_type,
+			       std::string content_length,
+			       std::string file_content);
+  
+    std::string GetContentType(std::string extension);
+    int ReadFile(std::string fullpath, std::string& file_content);
 
   private:
-    std::string resource_path_; // what the client requested
-    std::string static_path_; // where to look for that resource
+    std::string fullpath_;
 };
 
 #endif
