@@ -75,6 +75,8 @@ std::string StaticResponse::GetContentType(std::string extension) {
     content_type = "image/jpeg";
   else if (extension == "png")
     content_type = "image/png";
+  else if (extension == "zip")
+    content_type = "application/zip";
   else
     content_type = "text/plain";
 

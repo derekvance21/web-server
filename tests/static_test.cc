@@ -74,3 +74,48 @@ TEST_F(StaticHandlerTest, NonExistantFileResponseTest)
 
   EXPECT_TRUE(response == expected_response);
 }
+
+
+TEST_F(StaticHandlerTest, JPEGResponseTest)
+{
+  std::string path = "./static_folder/test_jpeg.jpeg";
+
+  StaticResponse static_handler(path);
+
+  std::string response = "";
+  response = static_handler.GetResponse();
+
+  std::string expected_response = "HTTP/1.1 200 OK\r\nContent-Type: image/jpeg\r\nContent-Length: 8123\r\n\r\n";
+
+  EXPECT_TRUE(response.substr(0, expected_response.length()) == expected_response);
+}
+
+
+TEST_F(StaticHandlerTest, PNGResponseTest)
+{
+  std::string path = "./static_folder/download.png";
+
+  StaticResponse static_handler(path);
+
+  std::string response = "";
+  response = static_handler.GetResponse();
+
+  std::string expected_response = "HTTP/1.1 200 OK\r\nContent-Type: image/png\r\nContent-Length: 9205\r\n\r\n";
+
+  EXPECT_TRUE(response.substr(0, expected_response.length()) == expected_response);
+}
+
+
+TEST_F(StaticHandlerTest, ZIPResponseTest)
+{
+  std::string path = "./static_folder/file.zip";
+
+  StaticResponse static_handler(path);
+
+  std::string response = "";
+  response = static_handler.GetResponse();
+
+  std::string expected_response = "HTTP/1.1 200 OK\r\nContent-Type: application/zip\r\nContent-Length: 0\r\n\r\n";
+
+  EXPECT_TRUE(response == expected_response);
+}
