@@ -73,7 +73,7 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
         std::string loc = iter->first;
         std::string val = iter->second; // could be $echo for echoing or a path for static
         // std::cerr << loc << ' ' << val << "\n";
-        // if req_path starts with loc - there's a match
+        // if req_path starts with loc - there's a match      
         int pos = req_path.find(loc);
         if (pos != 0) {
           // if loc wasn't at the start of req_path - not a match
