@@ -1,12 +1,21 @@
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:58.968198]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.651634]: 
           [info]: Server initializaing, port: 8080;
+location /static {
+  static ../tests/static_folder;
+}
+location /static1 {
+  static ../tests/static_folder1;
+}
+location /testing/folder {
+  static ../tests;
+}
 location /echo {
   echo;
 }
 
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:58.973633]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.664067]: 
           [info]: Reading data...
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:58.974859]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.664217]: 
           [info]: Writing data [ECHO]:
 HTTP/1.1 200 OK
 Content-Type: text/plain
@@ -18,13 +27,13 @@ User-Agent: curl/7.68.0
 Accept: */*
 
 
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:58.975668]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.664305]: 
           [info]: Reading data...
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:58.980431]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.664532]: 
           [info]: Session Terminating.
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:59.003206]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.678711]: 
           [info]: Reading data...
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:59.004296]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.678930]: 
           [info]: Writing data [STATIC]:
 HTTP/1.1 404 Not Found
 Content-Type: text/plain
@@ -32,7 +41,60 @@ Content-Length: 42
 
 This requested resource could not be found
 
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:59.005553]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.679186]: 
           [info]: Reading data...
-Thread [0x00007f5bf86c3740] @ time [2021-04-26 08:16:59.010497]: 
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.679451]: 
+          [info]: Session Terminating.
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.694289]: 
+          [info]: Reading data...
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.694525]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 21
+
+This is Team Juzang!
+
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.694616]: 
+          [info]: Reading data...
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.694903]: 
+          [info]: Session Terminating.
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.711252]: 
+          [info]: Reading data...
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.711437]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: image/jpeg
+Content-Length: 0
+
+
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.711536]: 
+          [info]: Reading data...
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.713126]: 
+          [info]: Session Terminating.
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.730411]: 
+          [info]: Reading data...
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.730641]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 196
+
+port 8080;
+location /static {
+  static ../tests/static_folder;
+}
+location /static1 {
+  static ../tests/static_folder1;
+}
+location /testing/folder {
+  static ../tests;
+}
+location /echo {
+  echo;
+}
+
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.730746]: 
+          [info]: Reading data...
+Thread [0x00007f270444e740] @ time [2021-04-26 10:15:34.732011]: 
           [info]: Session Terminating.

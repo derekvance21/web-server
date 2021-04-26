@@ -4,14 +4,16 @@ PWD=`pwd`
 PORT=8080
 
 function cleanup() {
-  rm -f tmp.out tmp.config
+  rm -f tmp.out
   kill $! > /dev/null 2>&1
 }
 
 function test() {
+  req=$1
+  regression=$2
   rm -f tmp.out
-  curl -sSi -m 2 -o tmp.out $1
-  diff -w tmp.out $2
+  curl -sSi -m 2 -o tmp.out "http://localhost:${PORT}${req}"
+  diff -w tmp.out $regression
   if [[ $? -ne 0 ]]; then
     cleanup
     exit 1
@@ -23,16 +25,19 @@ if [[ ! $PWD =~ $DIR$ ]]; then
   exit 1
 fi
 
-echo "port ${PORT}; location /echo { echo; }" > tmp.config
-../build/bin/webserver tmp.config &
+../build/bin/webserver example_config/config_locations &
 EXIT=$?
 if [[ $EXIT -ne 0 ]]; then
   echo "Failed to start webserver; exit code: ${$?}"
   exit $EXIT
 fi
 
-# testing echo
-test "http://localhost:$PORT/echo" regression_echo.out
-test "http://localhost:$PORT/bad/location" regression_404.out
+test "/echo" regression_echo.out
+test "/bad/location" regression_404.out
+test "/static/hello.html" regression_static.out
+test "/static1/img.jpg" regression_static1.out
+test "/testing/folder/example_config/config_locations" regression_static2.out
+
 cleanup
+echo "All tests passed!"
 exit 0

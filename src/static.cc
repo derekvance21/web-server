@@ -30,8 +30,6 @@ std::string StaticResponse::GetResponse()
     NotFoundResponse obj;
     return obj.GetResponse();
   }
-    
-
   
   // Get the content type (i.e., text/html)
   std::string content_type = GetContentType(extension);

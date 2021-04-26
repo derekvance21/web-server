@@ -70,11 +70,12 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
       std::string req_path = req.GetPath();
       bool echo = false;
       
-      for (std::map<std::string,std::string>::iterator iter = loc_map_.begin(); iter != loc_map_.end(); iter++) {
+      for (std::map<std::string,std::string>::reverse_iterator iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
         std::string loc = iter->first;
         std::string val = iter->second; // could be $echo for echoing or a path for static
         // std::cerr << loc << ' ' << val << "\n";
-        // if req_path starts with loc - there's a match      
+        // if req_path starts with loc - there's a match
+        // what about /static and /static1, and client asks for /static1/test.txt? In some sense we want longest-matching
         int pos = req_path.find(loc);
         if (pos != 0) {
           // if loc wasn't at the start of req_path - not a match
@@ -90,11 +91,11 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
         std::string file_path = req_path.substr(loc.length(), std::string::npos);
         // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
 
-	std::string fullpath = val + file_path;
-	std::cerr << fullpath << std::endl;
+        std::string fullpath = val + file_path;
+        std::cerr << fullpath << std::endl;
 
-	StaticResponse static_res(fullpath);
-	response_msg = static_res.GetResponse();
+        StaticResponse static_res(fullpath);
+        response_msg = static_res.GetResponse();
 	
         break;
       }
