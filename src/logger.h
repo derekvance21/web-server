@@ -35,10 +35,11 @@ class Logger
         void log_termination();
         void log_error(std::string log_message);
         void log_server_initialization(std::string log_message);
+        void log_server_initialization_failure(std::string log_message);
         void log_data_read();
         void log_data_write_echo(std::string log_message);
         void log_data_write_static(std::string log_message);
-    //response(const std::string& bytes_transferred, const std::string& data);
+        void log_session_end();
 };
 
 #endif

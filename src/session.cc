@@ -50,6 +50,7 @@ void session::handle_read()
 /* Callback function: on read then format and send response back if successful */
 int session::send_response(const boost::system::error_code& error, size_t bytes_transferred)
 {
+  Logger* instance = Logger::getInstance();
   if (!error)
     {
       // old way of doing it
@@ -91,7 +92,6 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
       }
 
       // set up logging...
-      Logger* instance = Logger::getInstance();
       if(echo)
         instance->log_data_write_echo(response_msg);
       else
@@ -105,6 +105,7 @@ int session::send_response(const boost::system::error_code& error, size_t bytes_
     }
   else
     {
+      instance->log_session_end();
       delete this;
       return 1;
     }

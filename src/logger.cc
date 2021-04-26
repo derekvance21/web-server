@@ -83,6 +83,10 @@ void Logger::log_server_initialization(std::string port){
     BOOST_LOG_SEV(slg, info) << "Server initializaing, port: " << port << "\n";
 }
 
+void Logger::log_server_initialization_failure(std::string message){
+    BOOST_LOG_SEV(slg, error) << "Server initializaing failure: " << message;
+}
+
 void Logger::log_data_read(){
     BOOST_LOG_SEV(slg, info) << "Reading data...\n";
 }
@@ -95,3 +99,6 @@ void Logger::log_data_write_static(std::string log_message){
      BOOST_LOG_SEV(slg, info) << "Writing data [STATIC]:\n" << log_message << "\n";
 }
 
+void Logger::log_session_end(){
+     BOOST_LOG_SEV(slg, info) << "Session Terminating.\n";
+}
