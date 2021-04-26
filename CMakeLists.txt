@@ -50,7 +50,8 @@ target_link_libraries(webserver pthread server_lib request_lib session_lib stati
 
 # TODO(!): Update test executable name, srcs, and deps
 add_executable(config_parser_test tests/config_parser_test.cc)
-target_link_libraries(config_parser_test config_parser_lib gtest_main)
+target_link_libraries(config_parser_test config_parser_lib gtest_main logger_lib
+                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 add_executable(echo_response_test tests/echo_response_test.cc)
 target_link_libraries(echo_response_test echo_lib gtest_main)

@@ -16,11 +16,16 @@
 #include <map>
 #include "config_parser.h"
 #include <boost/asio.hpp>
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 
 // adding new function to return the port number in the config file
 int NginxConfig::GetPort() {
+
+  // set up logging
+  Logger* instance = Logger::getInstance();
+  
   /* parse config file to find port number */
   std::string config_string = this->ToString();
 
@@ -33,6 +38,7 @@ int NginxConfig::GetPort() {
     port_pos = config_string.find("listen ");
     if(port_pos == std::string::npos) {
       std::cerr << "No port in config file. Usage: port <port num>;\n";
+      instance->log_server_initialization_failure("No port in config file. Usage: port <port num>;\n");
       return -1;
     }
 
@@ -46,8 +52,10 @@ int NginxConfig::GetPort() {
   using namespace std; // For atoi.
   if(atoi(port.c_str()) == 0){
     std::cerr << "Invalid port in config file. Usage: port <port num>;\n";
+    instance->log_server_initialization_failure("Invalid port in config file. Usage: port <port num>;\n");
     return -1;
   }
+  instance->log_server_initialization(port.c_str());
   return atoi(port.c_str());
 }
 
