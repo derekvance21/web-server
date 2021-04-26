@@ -1,3 +1,9 @@
-server {
-  port 80;
+port 80;
+
+location /static {
+  static /static_folder;
+}
+
+location / {
+  echo;
 }
