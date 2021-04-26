@@ -1,0 +1,15 @@
+Thread [0x00007fb24e1a3740] @ time [2021-04-26 23:29:57.396325]: 
+          [info]: Server initializaing, port: 8080;
+location /static {
+  static ../tests/static_folder;
+}
+location /static1 {
+  static ../tests/static_folder1;
+}
+location /testing/folder {
+  static ../tests;
+}
+location /echo {
+  echo;
+}
+
