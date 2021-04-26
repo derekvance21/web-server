@@ -4,6 +4,6 @@ location /static {
   static /static_folder;
 }
 
-location /echo {
+location / {
   echo;
 }

@@ -1,9 +1,0 @@
-port 8080;
-
-location /static {
-  static ../tests/static_folder;
-}
-
-location / {
-  echo;
-}
