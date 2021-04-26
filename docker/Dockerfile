@@ -23,6 +23,9 @@ COPY --from=builder /usr/src/project/build/bin/webserver .
 # Above is noted in spec section "Create a Docker container"
 COPY --from=builder /usr/src/project/config/config_file .
 
+# Added: COPY static_folder
+COPY --from=builder /usr/src/project/tests/static_folder .
+
 # TODO(samyallal00): Expose some port(s)
 EXPOSE 80
 
