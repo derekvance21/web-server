@@ -24,7 +24,8 @@ COPY --from=builder /usr/src/project/build/bin/webserver .
 COPY --from=builder /usr/src/project/config/config_file .
 
 # Added: COPY static_folder
-COPY --from=builder /usr/src/project/tests/static_folder .
+RUN mkdir ./static_folder/
+COPY --from=builder /usr/src/project/tests/static_folder ./static_folder/
 
 # TODO(samyallal00): Expose some port(s)
 EXPOSE 80
