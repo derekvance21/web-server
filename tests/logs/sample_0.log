@@ -1,0 +1,120 @@
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.855574]: 
+          [info]: Server initializaing, port: 8080;
+location /static {
+  static ../tests/static_folder;
+}
+location /static1 {
+  static ../tests/static_folder1;
+}
+location /testing/folder {
+  static ../tests;
+}
+location /echo {
+  echo;
+}
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.874291]: 
+          [info]: Reading data:
+GET /echo HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.874473]: 
+          [info]: Writing data [ECHO]:
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 82
+
+GET /echo HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.876676]: 
+          [info]: Session Terminating.
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.902026]: 
+          [info]: Reading data:
+GET /bad/location HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.902112]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 404 Not Found
+Content-Type: text/plain
+Content-Length: 42
+
+This requested resource could not be found
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.902333]: 
+          [info]: Session Terminating.
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.916955]: 
+          [info]: Reading data:
+GET /static/hello.html HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.917137]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: text/html
+Content-Length: 21
+
+This is Team Juzang!
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.917441]: 
+          [info]: Session Terminating.
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.929217]: 
+          [info]: Reading data:
+GET /static1/img.jpg HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.929393]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: image/jpeg
+Content-Length: 0
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.929713]: 
+          [info]: Session Terminating.
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.942695]: 
+          [info]: Reading data:
+GET /testing/folder/example_config/config_locations HTTP/1.1
+Host: localhost:8080
+User-Agent: curl/7.68.0
+Accept: */*
+
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.942861]: 
+          [info]: Writing data [STATIC]:
+HTTP/1.1 200 OK
+Content-Type: text/plain
+Content-Length: 196
+
+port 8080;
+location /static {
+  static ../tests/static_folder;
+}
+location /static1 {
+  static ../tests/static_folder1;
+}
+location /testing/folder {
+  static ../tests;
+}
+location /echo {
+  echo;
+}
+
+Thread [0x00007f78c154e740] @ time [2021-05-02 21:26:23.943373]: 
+          [info]: Session Terminating.

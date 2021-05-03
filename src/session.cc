@@ -25,102 +25,89 @@
 using boost::asio::ip::tcp;
 
 
-session::session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
+Session::Session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
   : socket_(io_service), test_flag(test_flag), loc_map_(loc_map) {}
 
 
 /* Main function: starts off the reading from client */
-void session::start()
+void Session::start()
 {
   handle_read();
 }
 
 /* Reads into data_ when message sent */
-void session::handle_read()
+void Session::handle_read()
 {
   socket_.async_read_some(boost::asio::buffer(data_, max_length),
-			  boost::bind(&session::send_response, this,
+			  boost::bind(&Session::send_response, this,
 				      boost::asio::placeholders::error,
 				      boost::asio::placeholders::bytes_transferred));
     // set up logging
 }
 
 /* Callback function: on read then format and send response back if successful */
-int session::send_response(const boost::system::error_code& error, size_t bytes_transferred)
+int Session::send_response(const boost::system::error_code& error, size_t bytes_transferred)
 {
-  Logger* instance = Logger::getInstance();
   if (!error)
     {
-      std::string data_string(data_);
-      instance->log_data_read(data_string);
+      std::string req_string(data_);
+      Logger::getInstance()->log_data_read(req_string);
       memset(data_, 0, 1024);
 
-      // new way - shouldn't break above
-      // THIS DOESN'T ACTUALLY DO ANYTHING YET - IT'S BOILERPLATE CODE
       NotFoundResponse res_404;
       std::string response_msg = res_404.GetResponse();
-      Request req(data_string);
+      Request req(req_string);
       req.ExtractPath();
       std::string req_path = req.GetPath();
-      bool echo = false;
+      std::string handle_type = "404";
       
       for (std::map<std::string,std::string>::reverse_iterator iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
         std::string loc = iter->first;
-        std::string val = iter->second; // could be $echo for echoing or a path for static
-        // std::cerr << loc << ' ' << val << "\n";
+        std::string route = iter->second; // could be $echo for echoing or a path for static
         // if req_path starts with loc - there's a match
-        // what about /static and /static1, and client asks for /static1/test.txt? In some sense we want longest-matching
         int pos = req_path.find(loc);
         if (pos != 0) {
           // if loc wasn't at the start of req_path - not a match
           continue;
-        }
-        if (val == "$echo") {
+        } else if (route == "$echo") {
           // Iniitalize an EchoRequest object, assign response_msg to GetResponse(), break
-          EchoResponse echo_req(data_string);
-          response_msg = echo_req.GetResponse();
-          echo = true;
+          EchoResponse res_echo(req_string);
+          response_msg = res_echo.GetResponse();
+          handle_type = "ECHO";
+          break;
+        } else {
+          // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
+          std::string file_path = req_path.substr(loc.length(), std::string::npos);
+          std::string fullpath = route + file_path;
+          StaticResponse res_static(fullpath);
+          response_msg = res_static.GetResponse();
+          handle_type = "STATIC";
           break;
         }
-        std::string file_path = req_path.substr(loc.length(), std::string::npos);
-        // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
-
-        std::string fullpath = val + file_path;
-        std::cerr << fullpath << std::endl;
-
-        StaticResponse static_res(fullpath);
-        response_msg = static_res.GetResponse();
-	
-        break;
       }
 
-      // set up logging...
-      if(echo)
-        instance->log_data_write_echo(response_msg);
-      else
-        instance->log_data_write_static(response_msg);
-
       // write response to socket
-      handle_write(response_msg);
+      handle_write(response_msg, handle_type);
 
       // success exit code
       return 0;
     }
   else
     {
-      instance->log_session_end();
+      Logger::getInstance()->log_session_end();
       delete this;
       return 1;
     }
 }
 
 /* Writes response_msg back to socket (called on successfull read) */
-void session::handle_write(std::string response_msg)
+void Session::handle_write(std::string response_msg, std::string type)
 {
+  Logger::getInstance()->log_data_write(response_msg, type);
   // write response to socket
   boost::asio::async_write(socket_,
 			   boost::asio::buffer(response_msg),
-			   boost::bind(&session::loopback_read, this,
+			   boost::bind(&Session::loopback_read, this,
 				       boost::asio::placeholders::error,
                boost::asio::placeholders::bytes_transferred));
 }
@@ -128,7 +115,7 @@ void session::handle_write(std::string response_msg)
 /* Callback function: after successful write to socket, loop again waiting for message */
 // https://www.boost.org/doc/libs/1_38_0/doc/html/boost_asio/reference/basic_stream_socket/async_read_some.html
 // above link says the function handler has to include the size_t parameter
-int session::loopback_read(const boost::system::error_code& error, size_t bytes_transferred)
+int Session::loopback_read(const boost::system::error_code& error, size_t bytes_transferred)
 {
   if (!error)
     {

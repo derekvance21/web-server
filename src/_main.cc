@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     }
     
     boost::asio::io_service io_service;
-    server s(io_service, config);
+    Server s(io_service, config);
     s.start_accept();
     io_service.run();
     instance->log_termination();

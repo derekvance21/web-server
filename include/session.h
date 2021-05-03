@@ -18,18 +18,18 @@
 
 using boost::asio::ip::tcp;
 
-class session
+class Session
 {
 public:
   typedef std::map<std::string, std::string> loc_map_type;
 
-  session(boost::asio::io_service& io_service, 
+  Session(boost::asio::io_service& io_service, 
           bool test_flag = false,
           const loc_map_type& loc_map = loc_map_type());
   int send_response(const boost::system::error_code& error, size_t bytes_transferred);
   int loopback_read(const boost::system::error_code& error, size_t bytes_transferred);
   void handle_read();
-  void handle_write(std::string response_msg);
+  void handle_write(std::string response_msg, std::string type);
   void start();
   tcp::socket socket_;
 

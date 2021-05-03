@@ -22,12 +22,12 @@ using boost::asio::ip::tcp;
 
 class NginxConfig;
 
-class server
+class Server
 {
 public:
-  server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag = false );
+  Server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag = false );
   int start_accept();
-  int handle_accept(session* new_session, const boost::system::error_code& error);
+  int handle_accept(Session* new_session, const boost::system::error_code& error);
   
 private:
   // location map - key is the location set by config, value is the location to fetch those resources from

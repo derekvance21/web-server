@@ -161,10 +161,3 @@ std::string Request::GetPath() { return path_; }
 std::string Request::GetVersion() { return version_; }
 std::string Request::GetBody() { return body_; }
 std::unordered_map<std::string, std::string> Request::GetHeaders() { return headers_; }
-
-void Request::SetRequest(std::string request) { request_ = request; }
-void Request::SetMethod(std::string method) { method_ = method; }
-void Request::SetPath(std::string path) { path_ = path; }
-void Request::SetVersion(std::string version) { version_ = version; }
-void Request::SetBody(std::string body) { body_ = body; }
-void Request::SetHeaders(std::unordered_map<std::string, std::string> headers) { headers_ = headers; }

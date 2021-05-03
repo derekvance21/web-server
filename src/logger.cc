@@ -91,12 +91,8 @@ void Logger::log_data_read(std::string& log_message){
     BOOST_LOG_SEV(slg, info) << "Reading data:\n" << log_message << "\n";
 }
 
-void Logger::log_data_write_echo(std::string log_message){
-     BOOST_LOG_SEV(slg, info) << "Writing data [ECHO]:\n" << log_message << "\n";
-}
-
-void Logger::log_data_write_static(std::string log_message){
-     BOOST_LOG_SEV(slg, info) << "Writing data [STATIC]:\n" << log_message << "\n";
+void Logger::log_data_write(std::string log_message, std::string type){
+     BOOST_LOG_SEV(slg, info) << "Writing data [" << type << "]:\n" << log_message << "\n";
 }
 
 void Logger::log_session_end(){

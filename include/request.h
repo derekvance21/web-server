@@ -29,14 +29,6 @@ class Request {
   std::string GetBody();
   std::unordered_map<std::string, std::string> GetHeaders();
 
-  /* Setters (for testing) */
-  void SetRequest(std::string request);
-  void SetMethod(std::string method);
-  void SetPath(std::string path);
-  void SetVersion(std::string version);
-  void SetBody(std::string body);
-  void SetHeaders(std::unordered_map<std::string, std::string> headers);
-
  private:
   std::string request_;
   std::string method_;

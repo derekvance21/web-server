@@ -32,7 +32,7 @@ set(Boost_USE_STATIC_LIBS ON)             # TODO: not sure if log_setup is suppo
 find_package(Boost 1.50 REQUIRED COMPONENTS log_setup log system filesystem regex)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # TODO(!): Update name and srcs
 add_library(config_parser_lib src/config_parser.cc)
@@ -49,26 +49,26 @@ target_link_libraries(webserver pthread server_lib request_lib session_lib stati
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
-add_executable(config_parser_test tests/config_parser_test.cc)
+add_executable(config_parser_test tests/unit/config_parser_test.cc)
 target_link_libraries(config_parser_test config_parser_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
-add_executable(echo_response_test tests/echo_response_test.cc)
+add_executable(echo_response_test tests/unit/echo_response_test.cc)
 target_link_libraries(echo_response_test echo_lib gtest_main)
 
-add_executable(request_test tests/request_test.cc)
+add_executable(request_test tests/unit/request_test.cc)
 target_link_libraries(request_test request_lib gtest_main)
 
-add_executable(session_test tests/session_test.cc)
+add_executable(session_test tests/unit/session_test.cc)
 target_link_libraries(session_test session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 
-add_executable(server_test tests/server_test.cc)                   
+add_executable(server_test tests/unit/server_test.cc)                   
 target_link_libraries(server_test config_parser_lib server_lib  static_lib session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 		    
-add_executable(static_test tests/static_test.cc)
+add_executable(static_test tests/unit/static_test.cc)
 target_link_libraries(static_test static_lib gtest_main)
 
 
@@ -81,8 +81,8 @@ gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 gtest_discover_tests(static_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME IntegrationTest 
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh 
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration)
 
 # TODO(!): Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)     

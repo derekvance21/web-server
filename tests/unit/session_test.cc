@@ -17,7 +17,7 @@ class SessionFixtureTest : public ::testing::Test {
 TEST_F(SessionFixtureTest, BasicSessionTest){
 
   // Set up new session and run io_service
-  session* my_session = new session(io_service);
+  Session* my_session = new Session(io_service);
   io_service.run();
 
   // Data to be tested
@@ -41,7 +41,7 @@ TEST_F(SessionFixtureTest, BasicSessionTest){
 TEST_F(SessionFixtureTest, EmptyMessageSessionTest){
 
   // Set up new session and run io_service
-  session* my_session = new session(io_service);
+  Session* my_session = new Session(io_service);
   io_service.run();
 
   // Data to be tested
@@ -63,7 +63,7 @@ TEST_F(SessionFixtureTest, EmptyMessageSessionTest){
 TEST_F(SessionFixtureTest, MoreThanMaxMessageSessionTest){
 
   // Set up new session and run io_service
-  session* my_session = new session(io_service);
+  Session* my_session = new Session(io_service);
   io_service.run();
 
   // Data to be tested (more than 1024)
@@ -86,7 +86,7 @@ TEST_F(SessionFixtureTest, MoreThanMaxMessageSessionTest){
 TEST_F(SessionFixtureTest, ErrorLoopBackSessionTest){
 
   // Set up new session and run io_service
-  session* my_session = new session(io_service, true);
+  Session* my_session = new Session(io_service, true);
   io_service.run();
 
 
@@ -100,7 +100,7 @@ TEST_F(SessionFixtureTest, ErrorLoopBackSessionTest){
 TEST_F(SessionFixtureTest, SuccessLoopBackSessionTest){
 
   // Set up new session and run io_service
-  session* my_session = new session(io_service, true);
+  Session* my_session = new Session(io_service, true);
   io_service.run();
 
 
@@ -114,7 +114,7 @@ TEST_F(SessionFixtureTest, SuccessLoopBackSessionTest){
 TEST_F(SessionFixtureTest, ErrorResponseSessionTest){
 
   // Set up new session and run io_service
-  session* my_session = new session(io_service);
+  Session* my_session = new Session(io_service);
   io_service.run();
 
   // Data to be tested (more than 1024)
