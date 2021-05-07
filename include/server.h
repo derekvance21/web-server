@@ -35,6 +35,7 @@ private:
   std::map<std::string, std::string> loc_map_;
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
+  NginxConfig& config_;
   bool test_flag;
 };
 

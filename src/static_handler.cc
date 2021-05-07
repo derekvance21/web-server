@@ -2,17 +2,20 @@
 #include <sstream>
 #include <string>
 #include <fstream>
-#include "static.h"
+#include "static_handler.h"
 #include "request.h"
-#include "404.h"
+#include "not_found_handler.h"
+#include <boost/beast/http.hpp>
 
-StaticResponse::StaticResponse(const std::string& fullpath)
-  : fullpath_(fullpath)
+namespace http = boost::beast::http;
+
+StaticHandler::StaticHandler(const string& location_path, const NginxConfig& config)
+  : RequestHandler(location_path, config)
 {}
 
 
 /* Main Function: Format the response based on client request */
-std::string StaticResponse::GetResponse()
+http::response<http::dynamic_body> StaticHandler::handle_request(const http::request<http::string_body> request)
 {
   // Get the extension of the file (i.e., txt)
   std::size_t dot = fullpath_.find_last_of(".");
@@ -44,7 +47,7 @@ std::string StaticResponse::GetResponse()
 }
 
 /* Collects all data and format the proper response message */
-std::string StaticResponse::FormatResponse(std::string content_type,
+std::string StaticHandler::FormatResponse(std::string content_type,
 					   std::string content_length,
 					   std::string file_content) {
   
@@ -64,7 +67,7 @@ std::string StaticResponse::FormatResponse(std::string content_type,
 }
 
 /* Based on file extension, return proper content type attribute */
-std::string StaticResponse::GetContentType(std::string extension) {
+std::string StaticHandler::GetContentType(std::string extension) {
   std::string content_type;
   
   if (extension == "html" || extension == "htm")
@@ -83,7 +86,7 @@ std::string StaticResponse::GetContentType(std::string extension) {
 
 
 /* Read whole file data to be returned */
-int StaticResponse::ReadFile(std::string fullpath, std::string& file_content) {
+int StaticHandler::ReadFile(std::string fullpath, std::string& file_content) {
 
   std::ifstream file(fullpath, std::ios::in | std::ios::binary);
 

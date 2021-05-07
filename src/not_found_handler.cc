@@ -1,9 +1,17 @@
 #include <sstream>
 #include <string>
 // #include "response.h"
-#include "404.h"
+#include "not_found_handler.h"
+#include <boost/beast/http.hpp>
 
-std::string NotFoundResponse::GetResponse()
+namespace http = boost::beast::http;
+
+NotFoundHandler::NotFoundHandler(const std::string& location_path, const NginxConfig& config)
+  : RequestHandler(location_path, config)
+{}
+
+//TODO: add argument list to request
+http::response<http::dynamic_body> NotFoundHandler::handle_request(const http::request<http::string_body> request)
 {
   try {
     std::string body = "This requested resource could not be found";

@@ -1,12 +1,15 @@
 #include <sstream>
 #include <string>
-#include "echo.h"
+#include "echo_handler.h"
+#include <boost/beast/http.hpp>
 
-EchoResponse::EchoResponse(const std::string& data)
-  : data_(data)
+namespace http = boost::beast::http;
+
+EchoHandler::EchoHandler(const string& location_path, const NginxConfig& config)
+  : RequestHandler(location_path, config)
 {}
 
-std::string EchoResponse::GetResponse()
+http::response<http::dynamic_body> EchoHandler::handle_request(const http::request<http::string_body> request)
 {
   try {
     std::stringstream response_msg;

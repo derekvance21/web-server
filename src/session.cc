@@ -14,19 +14,23 @@
 #include <boost/asio.hpp>
 #include <sstream>
 #include <map>
+#include <boost/beast/http.hpp>
 #include "session.h"
-#include "response.h"
-#include "echo.h"
-#include "static.h"
-#include "404.h"
+#include "request_handler.h"
+#include "echo_handler.h"
+#include "static_handler.h"
+#include "not_found_handler.h"
 #include "request.h"
 #include "logger.h"
+#include "config_parser.h"
+
+namespace http = boost::beast::http;
 
 using boost::asio::ip::tcp;
 
 
-Session::Session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
-  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map) {}
+Session::Session(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag, const loc_map_type& loc_map )
+  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map), config_(config) {}
 
 
 /* Main function: starts off the reading from client */
@@ -54,8 +58,10 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       Logger::getInstance()->log_data_read(req_string);
       memset(data_, 0, 1024);
 
-      NotFoundResponse res_404;
-      std::string response_msg = res_404.GetResponse();
+      // TODO: initialze NotFoundRequestHandler with location_path and config
+      NotFoundHandler res_404;
+      // TODO: pass in http::request type to handle_request()
+      std::string response_msg = res_404.handle_request();
       Request req(req_string);
       req.ExtractPath();
       std::string req_path = req.GetPath();
@@ -71,16 +77,22 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
           continue;
         } else if (route == "$echo") {
           // Iniitalize an EchoRequest object, assign response_msg to GetResponse(), break
-          EchoResponse res_echo(req_string);
-          response_msg = res_echo.GetResponse();
+
+          //TODO: initialize echoRequestHandler with location_path and config
+          EchoHandler res_echo(req_string);
+          //TODO: pass in http::request type to handle_request()
+          response_msg = res_echo.handle_request();
           handle_type = "ECHO";
           break;
         } else {
           // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
           std::string file_path = req_path.substr(loc.length(), std::string::npos);
           std::string fullpath = route + file_path;
-          StaticResponse res_static(fullpath);
-          response_msg = res_static.GetResponse();
+
+          //TODO: initialize StaticRequestHandler with location_path and config
+          StaticHandler res_static(fullpath);
+          //TODO: pass in http::request type to handle_request()
+          response_msg = res_static.handle_request();
           handle_type = "STATIC";
           break;
         }
@@ -98,6 +110,10 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       delete this;
       return 1;
     }
+}
+//const string& location_path, const NginxConfig& config
+RequestHandler* createHandler() {
+  
 }
 
 /* Writes response_msg back to socket (called on successfull read) */

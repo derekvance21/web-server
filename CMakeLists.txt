@@ -37,11 +37,11 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # TODO(!): Update name and srcs
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
-add_library(session_lib src/session.cc src/request.cc src/echo.cc src/404.cc src/static.cc)
-add_library(echo_lib src/echo.cc)
+add_library(session_lib src/session.cc src/request.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc)
+add_library(echo_lib src/echo_handler.cc)
 add_library(request_lib src/request.cc)
 add_library(logger_lib src/logger.cc)
-add_library(static_lib src/request.cc src/404.cc src/static.cc)
+add_library(static_lib src/request.cc src/not_found_handler.cc src/static_handler.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     
