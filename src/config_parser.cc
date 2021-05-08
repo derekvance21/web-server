@@ -59,28 +59,18 @@ int NginxConfig::GetPort() {
   return atoi(port.c_str());
 }
 
-std::map<std::string, std::string> NginxConfig::GetLocationMap() {
-  std::map<std::string, std::string> location_handlers;
+// returns a map of the request location, request handler name, and nginxconfig child object
+std::map<std::string, std::pair<std::string, NginxConfig>> NginxConfig::GetLocationMap() {
+  std::map<std::string, std::pair<std::string, NginxConfig>> location_handlers;
   for (const auto& statement : statements_) {
-    if (statement->tokens_.size() == 2 && 
+    if (statement->tokens_.size() == 3 && 
         statement->tokens_.front() == "location" &&
         statement->child_block_.get() != nullptr) {
-      std::string location = statement->tokens_.back();
-      for (const auto& handler_statement : statement->child_block_->statements_) {
-        if (!handler_statement->tokens_.empty()) {
-          std::string target = handler_statement->tokens_.front();
-          if(target == "static") {
-            if (handler_statement->tokens_.size() == 2) {
-              // last token (.back()) is a path
-              location_handlers[location] = handler_statement->tokens_.back();
-              break;
-            } 
-          } else if (target == "echo") {
-            location_handlers[location] = "$echo";
-            break;
-          }
-        }
-      }
+      std::string location = statement->tokens_.at(1);
+      std::string handler = statement->tokens_.back();
+      NginxConfig child = *(statement->child_block_);
+
+      location_handlers[location] = std::pair<std::string, NginxConfig>(handler, child);
     }
   }
   return location_handlers;

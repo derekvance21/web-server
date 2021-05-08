@@ -32,10 +32,9 @@ public:
 private:
   // location map - key is the location set by config, value is the location to fetch those resources from
   // special case: if value is $echo, then use echoing response 
-  std::map<std::string, std::string> loc_map_;
+  std::map<std::string, std::pair<std::string, NginxConfig>> loc_map_;
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
-  NginxConfig& config_;
   bool test_flag;
 };
 

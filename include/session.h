@@ -16,6 +16,7 @@
 #include <boost/asio.hpp>
 #include <map>
 #include "request_handler.h"
+#include "config_parser.h"
 
 using boost::asio::ip::tcp;
 class NginxConfig;
@@ -23,10 +24,9 @@ class NginxConfig;
 class Session
 {
 public:
-  typedef std::map<std::string, std::string> loc_map_type;
+  typedef std::map<std::string, std::pair<std::string,NginxConfig>> loc_map_type;
 
   Session(boost::asio::io_service& io_service, 
-          NginxConfig& config,
           bool test_flag = false,
           const loc_map_type& loc_map = loc_map_type());
   int send_response(const boost::system::error_code& error, size_t bytes_transferred);
@@ -34,7 +34,7 @@ public:
   void handle_read();
   void handle_write(std::string response_msg, std::string type);
   void start();
-  RequestHandler* createHandler();
+  RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
   tcp::socket socket_;
 
 
@@ -43,7 +43,6 @@ private:
   bool test_flag;
   enum { max_length = 1024 };
   char data_[max_length];
-  NginxConfig& config_;
 };
 
 #endif

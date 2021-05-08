@@ -29,8 +29,8 @@ namespace http = boost::beast::http;
 using boost::asio::ip::tcp;
 
 
-Session::Session(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag, const loc_map_type& loc_map )
-  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map), config_(config) {}
+Session::Session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
+  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map) {}
 
 
 /* Main function: starts off the reading from client */
@@ -58,48 +58,34 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       Logger::getInstance()->log_data_read(req_string);
       memset(data_, 0, 1024);
 
-      // TODO: initialze NotFoundRequestHandler with location_path and config
-      NotFoundHandler res_404;
-      // TODO: pass in http::request type to handle_request()
-      std::string response_msg = res_404.handle_request();
+      // TODO: replace the use of the Request object with a boost::beast::http::request
       Request req(req_string);
       req.ExtractPath();
       std::string req_path = req.GetPath();
-      std::string handle_type = "404";
-      
-      for (std::map<std::string,std::string>::reverse_iterator iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
+
+      // iterate over location map to make appropriate request handlers
+      std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
+      for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
         std::string loc = iter->first;
-        std::string route = iter->second; // could be $echo for echoing or a path for static
+        std::string handler = iter->second.first; 
+        NginxConfig child_block = iter->second.second;
+
         // if req_path starts with loc - there's a match
         int pos = req_path.find(loc);
         if (pos != 0) {
           // if loc wasn't at the start of req_path - not a match
           continue;
-        } else if (route == "$echo") {
-          // Iniitalize an EchoRequest object, assign response_msg to GetResponse(), break
+        } 
+        
+        RequestHandler* request_handler = createHandler(loc, handler, child_block);
+        //TODO: pass http::request into handle_request() function
+        http::request<http::string_body> req(http::verb::get, "empty", 11);
+        http::response<http::dynamic_body> response = request_handler->handle_request(req);
 
-          //TODO: initialize echoRequestHandler with location_path and config
-          EchoHandler res_echo(req_string);
-          //TODO: pass in http::request type to handle_request()
-          response_msg = res_echo.handle_request();
-          handle_type = "ECHO";
-          break;
-        } else {
-          // Initialize a StaticResponse object, assign response_msg to GetResponse(), break
-          std::string file_path = req_path.substr(loc.length(), std::string::npos);
-          std::string fullpath = route + file_path;
-
-          //TODO: initialize StaticRequestHandler with location_path and config
-          StaticHandler res_static(fullpath);
-          //TODO: pass in http::request type to handle_request()
-          response_msg = res_static.handle_request();
-          handle_type = "STATIC";
-          break;
-        }
       }
 
-      // write response to socket
-      handle_write(response_msg, handle_type);
+      // TODO: write response object to server
+      //handle_write(response_msg, handle_type);
 
       // success exit code
       return 0;
@@ -112,8 +98,15 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
     }
 }
 //const string& location_path, const NginxConfig& config
-RequestHandler* createHandler() {
-  
+RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child) {
+  if (handler == "StaticHandler") {
+    return new StaticHandler(location, config_child);
+  }
+  if (handler == "EchoHandler") {
+    return new EchoHandler(location, config_child);
+  }
+  // Should a NotFoundHandler take any arguments?
+  return new NotFoundHandler(location, config_child);
 }
 
 /* Writes response_msg back to socket (called on successfull read) */

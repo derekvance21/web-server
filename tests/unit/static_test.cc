@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "request.h"
-#include "static.h"
+#include "static_handler.h"
 #include <boost/asio.hpp>
 
 #include <string>

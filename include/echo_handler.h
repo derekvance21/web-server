@@ -11,9 +11,8 @@ namespace http = boost::beast::http;
 class EchoHandler : public RequestHandler
 {
   public:
-    EchoHandler(const string& location_path, const NginxConfig& config);
-    http::response handle_request(const http::request<http::string_body> request);
-    
+    EchoHandler(const std::string& location_path, const NginxConfig& config);
+    http::response<http::dynamic_body> handle_request(const http::request<http::string_body> request);   
 };
 
 #endif

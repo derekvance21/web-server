@@ -13,8 +13,8 @@ namespace http = boost::beast::http;
 class StaticHandler : public RequestHandler
 {
   public:
-    StaticHandler(const string& location_path, const NginxConfig& config);
-    http::response<http::dynamic_body> handle_request(const http::request<string_body> request);
+    StaticHandler(const std::string& location_path, const NginxConfig& config);
+    http::response<http::dynamic_body> handle_request(const http::request<http::string_body> request);
     std::string FormatResponse(std::string content_type,
 			       std::string content_length,
 			       std::string file_content);

@@ -9,16 +9,17 @@
 
 namespace http = boost::beast::http;
 
-StaticHandler::StaticHandler(const string& location_path, const NginxConfig& config)
+StaticHandler::StaticHandler(const std::string& location_path, const NginxConfig& config)
   : RequestHandler(location_path, config)
 {}
 
 
 /* Main Function: Format the response based on client request */
+// TODO: create and return an http::response object instead of a string
 http::response<http::dynamic_body> StaticHandler::handle_request(const http::request<http::string_body> request)
 {
   // Get the extension of the file (i.e., txt)
-  std::size_t dot = fullpath_.find_last_of(".");
+  /*std::size_t dot = fullpath_.find_last_of(".");
   std::string extension = "";
   
   if (dot != std::string::npos)
@@ -42,8 +43,10 @@ http::response<http::dynamic_body> StaticHandler::handle_request(const http::req
 
   // Finally, format the proper response message and return it
   std::string response = FormatResponse(content_type, content_length, file_content);
-
-  return response;
+*/
+  //return response;
+  http::response<http::dynamic_body> res(http::status::ok, 11);
+  return res;
 }
 
 /* Collects all data and format the proper response message */

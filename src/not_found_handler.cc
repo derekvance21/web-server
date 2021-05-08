@@ -1,6 +1,5 @@
 #include <sstream>
 #include <string>
-// #include "response.h"
 #include "not_found_handler.h"
 #include <boost/beast/http.hpp>
 
@@ -10,10 +9,11 @@ NotFoundHandler::NotFoundHandler(const std::string& location_path, const NginxCo
   : RequestHandler(location_path, config)
 {}
 
-//TODO: add argument list to request
+//TODO: create and return a http::response object instead of a string
 http::response<http::dynamic_body> NotFoundHandler::handle_request(const http::request<http::string_body> request)
 {
-  try {
+  //try {
+    /*
     std::string body = "This requested resource could not be found";
     std::stringstream response_msg;
     response_msg << "HTTP/1.1 404 Not Found\r\n";
@@ -21,10 +21,14 @@ http::response<http::dynamic_body> NotFoundHandler::handle_request(const http::r
     response_msg << "Content-Length: " << body.length() << "\r\n";
     response_msg << "\r\n";
     response_msg << body << "\r\n";
-
-    return response_msg.str();
+*/
+    //return response_msg.str();
+    http::response<http::dynamic_body> res(http::status::ok, 11);
+    return res;
     
-  } catch(int error) {
+
+    
+  /*} catch(int error) {
     return "";
-  }
+  }*/
 }

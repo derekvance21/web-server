@@ -23,15 +23,14 @@ using boost::asio::ip::tcp;
 Server::Server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag)
 	: io_service_(io_service),
 	  acceptor_(io_service, tcp::endpoint(tcp::v4(), config.GetPort())),
-	  test_flag(test_flag),
-    config_(config)
+	  test_flag(test_flag)
 {
   loc_map_ = config.GetLocationMap();
 }
 
 int Server::start_accept()
 {
-  Session* new_session = new Session(io_service_, config_, false, loc_map_);
+  Session* new_session = new Session(io_service_, false, loc_map_);
   acceptor_.async_accept(new_session->socket_,
 			 boost::bind(&Server::handle_accept, this, new_session,
 				     boost::asio::placeholders::error));

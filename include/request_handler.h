@@ -14,14 +14,12 @@ class RequestHandler
     RequestHandler(const std::string& location_path, const NginxConfig& config)
       : location_path(location_path), config(config) {}
 
-      //TODO: Add argument list to response
       virtual http::response<http::dynamic_body> handle_request(const http::request<http::string_body> request) = 0;
 
   protected:
-    //TODO: Add argument list to request
-    http::request<http::string_body> request;
-    std::string location_path;
-    NginxConfig config;
+    http::request<http::string_body> request; // the request sent to the server
+    std::string location_path;                // the location path listed in the config file
+    NginxConfig config;                       // the post-parsed, block-scoped Nginx config object containing the request handler's arguments
 };
 
 #endif
