@@ -24,7 +24,7 @@ class NginxConfig {
   // Take the string of a config file and parse the file to return the 
   // port defined in the file.
   int GetPort();
-  std::map<std::string, std::string> GetLocationMap();
+  std::map<std::string, std::pair<std::string, NginxConfig>> GetLocationMap();
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 };

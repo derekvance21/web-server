@@ -21,6 +21,7 @@
 #include "404.h"
 #include "request.h"
 #include "logger.h"
+#include "config_parser.h"
 
 using boost::asio::ip::tcp;
 
@@ -60,16 +61,26 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       req.ExtractPath();
       std::string req_path = req.GetPath();
       std::string handle_type = "404";
-      
-      for (std::map<std::string,std::string>::reverse_iterator iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
+
+      /*typedef std::map<std::string, std::pair<std::string,std::string>>::iterator iter_type;
+      std::reverse_iterator<iter_type> rev_end (loc_map_.rbegin());
+      std::reverse_iterator<iter_type> rev_begin (loc_map_.rend());*/
+      std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
+      for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
+      //for (std::map<std::string, std::pair<std::string,std::string>>::reverse_iterator iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
         std::string loc = iter->first;
-        std::string route = iter->second; // could be $echo for echoing or a path for static
+        std::string handler = iter->second.first; // could be $echo for echoing or a path for static
+        NginxConfig child_block = iter->second.second;
         // if req_path starts with loc - there's a match
         int pos = req_path.find(loc);
         if (pos != 0) {
           // if loc wasn't at the start of req_path - not a match
           continue;
-        } else if (route == "$echo") {
+        } 
+        
+
+
+        /*else if (route == "$echo") {
           // Iniitalize an EchoRequest object, assign response_msg to GetResponse(), break
           EchoResponse res_echo(req_string);
           response_msg = res_echo.GetResponse();
@@ -83,7 +94,8 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
           response_msg = res_static.GetResponse();
           handle_type = "STATIC";
           break;
-        }
+        }*/
+
       }
 
       // write response to socket

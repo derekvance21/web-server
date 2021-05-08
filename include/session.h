@@ -15,13 +15,14 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <map>
+#include "config_parser.h"
 
 using boost::asio::ip::tcp;
 
 class Session
 {
 public:
-  typedef std::map<std::string, std::string> loc_map_type;
+  typedef std::map<std::string, std::pair<std::string,NginxConfig>> loc_map_type;
 
   Session(boost::asio::io_service& io_service, 
           bool test_flag = false,
