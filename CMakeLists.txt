@@ -45,13 +45,13 @@ add_library(static_lib src/request.cc src/not_found_handler.cc src/static_handle
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     
-target_link_libraries(webserver pthread server_lib request_lib session_lib static_lib config_parser_lib logger_lib
+target_link_libraries(webserver pthread server_lib request_lib session_lib static_lib echo_lib config_parser_lib logger_lib 
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
 #add_executable(config_parser_test tests/unit/config_parser_test.cc)
 #target_link_libraries(config_parser_test config_parser_lib gtest_main logger_lib
-                    #Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+#                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 #add_executable(echo_response_test tests/unit/echo_response_test.cc)
 #target_link_libraries(echo_response_test echo_lib gtest_main)
@@ -61,12 +61,12 @@ target_link_libraries(webserver pthread server_lib request_lib session_lib stati
 
 #add_executable(session_test tests/unit/session_test.cc)
 #target_link_libraries(session_test session_lib gtest_main logger_lib
-                    #Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+#                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 
 #add_executable(server_test tests/unit/server_test.cc)                   
 #target_link_libraries(server_test config_parser_lib server_lib  static_lib session_lib gtest_main logger_lib
-                    #Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+#                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 		    
 #add_executable(static_test tests/unit/static_test.cc)
 #target_link_libraries(static_test static_lib gtest_main)

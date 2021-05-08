@@ -3,15 +3,14 @@ Content-Type: text/plain
 Content-Length: 196
 
 port 8080;
-location /static {
-  static ../tests/static_folder;
+location /static StaticHandler {
+  root ../tests/static_folder;
 }
-location /static1 {
-  static ../tests/static_folder1;
+location /static1 StaticHandler {
+  root ../tests/static_folder1;
 }
-location /testing/folder {
-  static ../tests;
+location /testing/folder StaticHandler {
+  root ../tests;
 }
-location /echo {
-  echo;
+location /echo EchoHandler {
 }

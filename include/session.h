@@ -21,6 +21,7 @@
 using boost::asio::ip::tcp;
 class NginxConfig;
 
+RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
 class Session
 {
 public:
@@ -34,7 +35,7 @@ public:
   void handle_read();
   void handle_write(std::string response_msg, std::string type);
   void start();
-  RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
+  //RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
   tcp::socket socket_;
 
 
