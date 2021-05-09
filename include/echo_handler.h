@@ -12,7 +12,8 @@ class EchoHandler : public RequestHandler
 {
   public:
     EchoHandler(const std::string& location_path, const NginxConfig& config);
-    http::response<http::dynamic_body> handle_request(const http::request<http::string_body> request);   
+    http::response<http::string_body> handle_request(const http::request<http::string_body>& request);
+    std::string GetBody(const http::request<http::string_body>& request);
 };
 
 #endif

@@ -16,7 +16,7 @@ StaticHandler::StaticHandler(const std::string& location_path, const NginxConfig
 
 /* Main Function: Format the response based on client request */
 // TODO: create and return an http::response object instead of a string
-http::response<http::dynamic_body> StaticHandler::handle_request(const http::request<http::string_body> request)
+http::response<http::string_body> StaticHandler::handle_request(const http::request<http::string_body>& request)
 {
   // Get the extension of the file (i.e., txt)
   /*std::size_t dot = fullpath_.find_last_of(".");
@@ -45,7 +45,7 @@ http::response<http::dynamic_body> StaticHandler::handle_request(const http::req
   std::string response = FormatResponse(content_type, content_length, file_content);
 */
   //return response;
-  http::response<http::dynamic_body> res(http::status::ok, 11);
+  http::response<http::string_body> res(http::status::ok, 11);
   return res;
 }
 

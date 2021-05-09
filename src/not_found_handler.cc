@@ -9,8 +9,9 @@ NotFoundHandler::NotFoundHandler(const std::string& location_path, const NginxCo
   : RequestHandler(location_path, config)
 {}
 
+
 //TODO: create and return a http::response object instead of a string
-http::response<http::dynamic_body> NotFoundHandler::handle_request(const http::request<http::string_body> request)
+http::response<http::string_body> NotFoundHandler::handle_request(const http::request<http::string_body>& request)
 {
   //try {
     /*
@@ -23,7 +24,7 @@ http::response<http::dynamic_body> NotFoundHandler::handle_request(const http::r
     response_msg << body << "\r\n";
 */
     //return response_msg.str();
-    http::response<http::dynamic_body> res(http::status::ok, 11);
+    http::response<http::string_body> res(http::status::ok, 11);
     return res;
     
 

@@ -49,42 +49,43 @@ target_link_libraries(webserver pthread server_lib request_lib session_lib stati
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
-#add_executable(config_parser_test tests/unit/config_parser_test.cc)
-#target_link_libraries(config_parser_test config_parser_lib gtest_main logger_lib
-#                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+add_executable(config_parser_test tests/unit/config_parser_test.cc)
+target_link_libraries(config_parser_test config_parser_lib gtest_main logger_lib
+                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
-#add_executable(echo_response_test tests/unit/echo_response_test.cc)
-#target_link_libraries(echo_response_test echo_lib gtest_main)
+add_executable(echo_response_test tests/unit/echo_response_test.cc)
+target_link_libraries(echo_response_test echo_lib gtest_main)
 
-#add_executable(request_test tests/unit/request_test.cc)
-#target_link_libraries(request_test request_lib gtest_main)
-
-#add_executable(session_test tests/unit/session_test.cc)
-#target_link_libraries(session_test session_lib gtest_main logger_lib
-#                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+add_executable(request_test tests/unit/request_test.cc)
+target_link_libraries(request_test request_lib gtest_main)
 
 
-#add_executable(server_test tests/unit/server_test.cc)                   
-#target_link_libraries(server_test config_parser_lib server_lib  static_lib session_lib gtest_main logger_lib
-#                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+add_executable(session_test tests/unit/session_test.cc)
+target_link_libraries(session_test session_lib gtest_main logger_lib
+                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+
+
+add_executable(server_test tests/unit/server_test.cc)                   
+target_link_libraries(server_test config_parser_lib server_lib  static_lib session_lib gtest_main logger_lib
+                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 		    
 #add_executable(static_test tests/unit/static_test.cc)
 #target_link_libraries(static_test static_lib gtest_main)
 
 
 # TODO(!): Update with test binary
-#gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-#gtest_discover_tests(echo_response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-#gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-#gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-#gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(echo_response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 #gtest_discover_tests(static_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 #add_test(NAME IntegrationTest 
-   # COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
-   # WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration)
+ #   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
+  #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration)
 
 # TODO(!): Update with target/test targets
-#include(cmake/CodeCoverageReportConfig.cmake)   
-#generate_coverage_report(TARGETS webserver server_lib request_lib  static_lib session_lib logger_lib TESTS config_parser_test request_test session_test)  
-#generate_coverage_report(TARGETS webserver server_lib request_lib  static_lib session_lib logger_lib TESTS config_parser_test static_test echo_response_test request_test session_test server_test)
+include(cmake/CodeCoverageReportConfig.cmake)   
+generate_coverage_report(TARGETS webserver server_lib request_lib session_lib logger_lib TESTS config_parser_test request_test session_test)  
+generate_coverage_report(TARGETS webserver server_lib request_lib session_lib logger_lib TESTS config_parser_test echo_response_test request_test session_test server_test)

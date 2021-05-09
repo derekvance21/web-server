@@ -14,7 +14,7 @@ class StaticHandler : public RequestHandler
 {
   public:
     StaticHandler(const std::string& location_path, const NginxConfig& config);
-    http::response<http::dynamic_body> handle_request(const http::request<http::string_body> request);
+    http::response<http::string_body> handle_request(const http::request<http::string_body>& request);
     std::string FormatResponse(std::string content_type,
 			       std::string content_length,
 			       std::string file_content);

@@ -10,20 +10,32 @@ EchoHandler::EchoHandler(const std::string& location_path, const NginxConfig& co
 {}
 
 // TODO: create and return an http::response object instead of a string
-http::response<http::dynamic_body> EchoHandler::handle_request(const http::request<http::string_body> request)
+http::response<http::string_body> EchoHandler::handle_request(const http::request<http::string_body>& request)
 {
-  //try {
-    /*std::stringstream response_msg;
-    response_msg << "HTTP/1.1 200 OK\r\n";
-    response_msg << "Content-Type: text/plain\r\n";
-    response_msg << "Content-Length: " << data_.length();
-    response_msg << "\r\n\r\n";
-    response_msg << data_;
-*/
-    //return response_msg.str();
-    http::response<http::dynamic_body> res(http::status::ok, 11);
-    return res;
-  /*} catch(int error) {
-    return "";
-  }*/
+  // Get version, body and data length from the request
+  std::string body = GetBody(request);
+  size_t content_length = body.length();
+  size_t version = request.version();
+
+  
+  /* Generate the response */
+  http::response<http::string_body> res;
+
+  // Complete necessary fields
+  res.version(version);
+  res.result(http::status::ok);
+  res.set(http::field::content_type, "text/plain");
+  res.set(http::field::content_length, content_length);
+  res.body() = body;
+
+  // Return properly formatted response
+  return res;
+}
+
+/* Helper: Returns the body of a request as a string */
+std::string EchoHandler::GetBody(const http::request<http::string_body>& request)
+{
+  std::ostringstream oss;
+  oss << request.body();
+  return oss.str();
 }

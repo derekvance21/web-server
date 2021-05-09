@@ -14,7 +14,7 @@ class RequestHandler
     RequestHandler(const std::string& location_path, const NginxConfig& config)
       : location_path(location_path), config(config) {}
 
-      virtual http::response<http::dynamic_body> handle_request(const http::request<http::string_body> request) = 0;
+      virtual http::response<http::string_body> handle_request(const http::request<http::string_body>& request) = 0;
 
   protected:
     http::request<http::string_body> request; // the request sent to the server

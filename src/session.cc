@@ -49,6 +49,20 @@ void Session::handle_read()
     // set up logging
 }
 
+
+RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child) {
+  if (handler == "StaticHandler") {
+    return new StaticHandler(location, config_child);
+  }
+  if (handler == "EchoHandler") {
+    return new EchoHandler(location, config_child);
+  }
+  // Should a NotFoundHandler take any arguments?
+  return new NotFoundHandler(location, config_child);
+}
+
+
+
 /* Callback function: on read then format and send response back if successful */
 int Session::send_response(const boost::system::error_code& error, size_t bytes_transferred)
 {
@@ -80,7 +94,7 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
         RequestHandler* request_handler = createHandler(loc, handler, child_block);
         //TODO: pass http::request into handle_request() function
         http::request<http::string_body> req(http::verb::get, "empty", 11);
-        http::response<http::dynamic_body> response = request_handler->handle_request(req);
+        http::response<http::string_body> response = request_handler->handle_request(req);
 
       }
 
@@ -97,17 +111,7 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       return 1;
     }
 }
-//const string& location_path, const NginxConfig& config
-RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child) {
-  if (handler == "StaticHandler") {
-    return new StaticHandler(location, config_child);
-  }
-  if (handler == "EchoHandler") {
-    return new EchoHandler(location, config_child);
-  }
-  // Should a NotFoundHandler take any arguments?
-  return new NotFoundHandler(location, config_child);
-}
+
 
 /* Writes response_msg back to socket (called on successfull read) */
 void Session::handle_write(std::string response_msg, std::string type)
