@@ -62,7 +62,6 @@ RequestHandler* createHandler(std::string location, std::string handler, NginxCo
 }
 
 
-
 /* Callback function: on read then format and send response back if successful */
 int Session::send_response(const boost::system::error_code& error, size_t bytes_transferred)
 {

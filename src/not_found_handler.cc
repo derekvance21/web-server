@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include "request_handler.h"
 #include "not_found_handler.h"
 #include <boost/beast/http.hpp>
 
@@ -10,26 +11,24 @@ NotFoundHandler::NotFoundHandler(const std::string& location_path, const NginxCo
 {}
 
 
-//TODO: create and return a http::response object instead of a string
 http::response<http::string_body> NotFoundHandler::handle_request(const http::request<http::string_body>& request)
 {
-  //try {
-    /*
-    std::string body = "This requested resource could not be found";
-    std::stringstream response_msg;
-    response_msg << "HTTP/1.1 404 Not Found\r\n";
-    response_msg << "Content-Type: text/plain\r\n";
-    response_msg << "Content-Length: " << body.length() << "\r\n";
-    response_msg << "\r\n";
-    response_msg << body << "\r\n";
-*/
-    //return response_msg.str();
-    http::response<http::string_body> res(http::status::ok, 11);
-    return res;
-    
+  // Get version, body and data length from the request
+  std::string body = RequestHandler::GetBody(request);
+  size_t content_length = body.length();
+  size_t version = request.version();
 
+  /* Generate the response */
+  http::response<http::string_body> res;
+
+  // Complete necessary fields
+  res.version(version);
+  res.result(http::status::not_found);
+  res.set(http::field::content_type, "text/plain");
+  res.set(http::field::content_length, content_length);
+  res.body() = body;
+
+  // Return properly formatted response
+  return res;
     
-  /*} catch(int error) {
-    return "";
-  }*/
 }

@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "request_handler.h"
-#include "echo_handler.h"
+#include "not_found_handler.h"
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -8,7 +8,8 @@
 
 namespace http = boost::beast::http;
 
-class EchoHandlerTest : public ::testing::Test {
+
+class NotFoundHandlerTest : public ::testing::Test {
   protected:
     NginxConfigParser parser;
     NginxConfig out_config;
@@ -19,11 +20,11 @@ class EchoHandlerTest : public ::testing::Test {
 /* Unit Tests Below */
 /* ---------------- */
 
-TEST_F(EchoHandlerTest, StatusCodeResponseTest)
+TEST_F(NotFoundHandlerTest, StatusCodeResponseTest)
 {
   // Set-Up Response Message To Be Sent
-  std::string temp = "/echo";
-  EchoHandler req_handler(temp, out_config);
+  std::string temp = "/badecho";
+  NotFoundHandler req_handler(temp, out_config);
 
   http::request<http::string_body> req;
   
@@ -31,15 +32,15 @@ TEST_F(EchoHandlerTest, StatusCodeResponseTest)
   http::response<http::string_body> res = req_handler.handle_request(req);
 
   // Both Should Be Equal
-  EXPECT_TRUE(res.result_int() == 200);
+  EXPECT_TRUE(res.result_int() == 404);
 }
 
 
-TEST_F(EchoHandlerTest, BasicResponse)
+TEST_F(NotFoundHandlerTest, BasicResponse)
 {
   // Set-Up Response Message To Be Sent
-  std::string temp = "/echo";
-  EchoHandler req_handler(temp, out_config);
+  std::string temp = "/badecho";
+  NotFoundHandler req_handler(temp, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
@@ -52,7 +53,7 @@ TEST_F(EchoHandlerTest, BasicResponse)
   osresponse_gotten << res;
 
   std::string response_gotten = osresponse_gotten.str();
-  std::string response_expect = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 20\r\n\r\nThis is Team Juzang!";
+  std::string response_expect = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 20\r\n\r\nThis is Team Juzang!";
 
   // Both Should Be Equal
   EXPECT_TRUE(response_gotten == response_expect);

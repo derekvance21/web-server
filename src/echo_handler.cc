@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include "request_handler.h"
 #include "echo_handler.h"
 #include <boost/beast/http.hpp>
 
@@ -13,7 +14,7 @@ EchoHandler::EchoHandler(const std::string& location_path, const NginxConfig& co
 http::response<http::string_body> EchoHandler::handle_request(const http::request<http::string_body>& request)
 {
   // Get version, body and data length from the request
-  std::string body = GetBody(request);
+  std::string body = RequestHandler::GetBody(request);
   size_t content_length = body.length();
   size_t version = request.version();
 
@@ -30,12 +31,4 @@ http::response<http::string_body> EchoHandler::handle_request(const http::reques
 
   // Return properly formatted response
   return res;
-}
-
-/* Helper: Returns the body of a request as a string */
-std::string EchoHandler::GetBody(const http::request<http::string_body>& request)
-{
-  std::ostringstream oss;
-  oss << request.body();
-  return oss.str();
 }
