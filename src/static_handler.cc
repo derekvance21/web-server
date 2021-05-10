@@ -17,6 +17,7 @@ StaticHandler::StaticHandler(const std::string& location_path, const NginxConfig
 http::response<http::string_body> StaticHandler::handle_request(const http::request<http::string_body>& request)
 {
   std::string fullpath = GetPath(request);
+  std::cerr << "fullpath: " << fullpath << "\n";
   
   std::size_t dot = fullpath.find_last_of(".");
   std::string extension = "";

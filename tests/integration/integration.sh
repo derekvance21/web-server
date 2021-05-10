@@ -17,6 +17,7 @@ function test() {
   curl -sSi -m 2 -o tmp.out "http://localhost:${PORT}${req}"
   diff -w tmp.out "$REGRESSION_FOLDER/$regression"
   if [[ $? -ne 0 ]]; then
+    echo "failed $req"
     cleanup
     exit 1
   fi

@@ -1,6 +1,6 @@
 HTTP/1.1 200 OK
 Content-Type: text/plain
-Content-Length: 196
+Content-Length: 235
 
 port 8080;
 location /static StaticHandler {
