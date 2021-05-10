@@ -86,6 +86,5 @@ add_test(NAME IntegrationTest
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration)
 
 # TODO(!): Update with target/test targets
-include(cmake/CodeCoverageReportConfig.cmake)   
-generate_coverage_report(TARGETS webserver server_lib session_lib logger_lib TESTS config_parser_test session_test)  
+include(cmake/CodeCoverageReportConfig.cmake)    
 generate_coverage_report(TARGETS webserver server_lib session_lib static_lib not_found_lib echo_lib logger_lib TESTS config_parser_test echo_handler_test session_test static_handler_test not_found_handler_test server_test)

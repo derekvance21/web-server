@@ -50,6 +50,36 @@ void Session::handle_read()
     // set up logging
 }
 
+http::response<http::string_body> Session::url_dispatcher(http::request<http::string_body> req, std::string req_path) {
+  // Instantiate the request handler
+      std::string loc = "", handler = "NotFoundHandler";
+      NginxConfig child_block;
+      RequestHandler* request_handler = createHandler(loc, handler, child_block);
+      
+      // iterate over location map to make appropriate request handlers
+      std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
+      for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
+        loc = iter->first;
+        handler = iter->second.first; 
+        child_block = iter->second.second;
+
+        // if req_path starts with loc - there's a match
+        int pos = req_path.find(loc);
+        if (pos != 0) {
+          // if loc wasn't at the start of req_path - not a match
+          continue;
+        } 
+        
+        // we have found a match, so change request_handler to new location/type
+        request_handler = createHandler(loc, handler, child_block);
+	      std::cerr << handler << " " << loc << std::endl;
+	      break;
+      }
+      
+      // pass http::request into handle_request, called on our request_handler
+      return request_handler->handle_request(req);
+}
+
 
 RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child) {
   if (handler == "StaticHandler") {
@@ -80,7 +110,6 @@ http::request<http::string_body> Session::FormatRequest(std::string req_string){
   return req;
 }
 
-
 /* Callback function: on read then format and send response back if successful */
 int Session::send_response(const boost::system::error_code& error, size_t bytes_transferred)
 {
@@ -90,7 +119,6 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       Logger::getInstance()->log_data_read(req_string);
       memset(data_, 0, 1024);
 
-
       http::request<http::string_body> req = FormatRequest(req_string);
       
       // Get target (path) and convert to string
@@ -98,33 +126,9 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       oss << req.target();
       std::string req_path = oss.str();
 
-      // Instantiate the request handler
-      std::string loc = "", handler = "NotFoundHandler";
-      NginxConfig child_block;
-      RequestHandler* request_handler = createHandler(loc, handler, child_block);
+       // call url_dispatcher 
+      http::response<http::string_body> res = url_dispatcher(req, req_path);
       
-      // iterate over location map to make appropriate request handlers
-      std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
-      for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
-        loc = iter->first;
-        handler = iter->second.first; 
-        child_block = iter->second.second;
-
-        // if req_path starts with loc - there's a match
-        int pos = req_path.find(loc);
-        if (pos != 0) {
-          // if loc wasn't at the start of req_path - not a match
-          continue;
-        } 
-        
-        // we have found a match, so change request_handler to new location/type
-        request_handler = createHandler(loc, handler, child_block);
-	std::cerr << handler << " " << loc << std::endl;
-	break;
-      }
-      
-      // pass http::request into handle_request, called on our request_handler
-      http::response<http::string_body> res = request_handler->handle_request(req);
       std::ostringstream response_stream;
       response_stream << res;
       std::string response_string = response_stream.str();
@@ -133,7 +137,7 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       std::cerr << response_string << std::endl;
 
       // write response to client
-      handle_write(response_string, handler);
+      handle_write(response_string, "string");
 
       // success exit code
       return 0;
