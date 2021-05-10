@@ -31,6 +31,7 @@ public:
   Session(boost::asio::io_service& io_service, 
           bool test_flag = false,
           const loc_map_type& loc_map = loc_map_type());
+  http::request<http::string_body> FormatRequest(std::string req_string);
   int send_response(const boost::system::error_code& error, size_t bytes_transferred);
   int loopback_read(const boost::system::error_code& error, size_t bytes_transferred);
   void handle_read();

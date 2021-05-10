@@ -14,10 +14,14 @@ EchoHandler::EchoHandler(const std::string& location_path, const NginxConfig& co
 http::response<http::string_body> EchoHandler::handle_request(const http::request<http::string_body>& request)
 {
   // Get version, body and data length from the request
-  std::string body = RequestHandler::GetBody(request);
-  size_t content_length = body.length();
   size_t version = request.version();
 
+  // Changed: instead of just body, echo back the whole request
+  std::ostringstream body_stream;
+  body_stream << request;
+  std::string body = body_stream.str();
+  
+  size_t content_length = body.length();
   
   /* Generate the response */
   http::response<http::string_body> res;

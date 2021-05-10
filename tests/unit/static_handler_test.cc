@@ -141,7 +141,7 @@ TEST_F(StaticHandlerTest, NonExistantFileResponseTest)
   osresponse_gotten << res;
 
   std::string response_gotten = osresponse_gotten.str();
-  std::string expected_response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 0\r\n\r\n";
+  std::string expected_response = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 42\r\n\r\nThis requested resource could not be found";
 
   EXPECT_TRUE(response_gotten == expected_response);
 }

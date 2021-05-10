@@ -14,7 +14,7 @@ NotFoundHandler::NotFoundHandler(const std::string& location_path, const NginxCo
 http::response<http::string_body> NotFoundHandler::handle_request(const http::request<http::string_body>& request)
 {
   // Get version, body and data length from the request
-  std::string body = RequestHandler::GetBody(request);
+  std::string body = "This requested resource could not be found";
   size_t content_length = body.length();
   size_t version = request.version();
 

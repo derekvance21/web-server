@@ -53,7 +53,7 @@ TEST_F(NotFoundHandlerTest, BasicResponse)
   osresponse_gotten << res;
 
   std::string response_gotten = osresponse_gotten.str();
-  std::string response_expect = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 20\r\n\r\nThis is Team Juzang!";
+  std::string response_expect = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 42\r\n\r\nThis requested resource could not be found";
 
   // Both Should Be Equal
   EXPECT_TRUE(response_gotten == response_expect);
