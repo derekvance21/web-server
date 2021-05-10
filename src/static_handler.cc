@@ -15,24 +15,26 @@ StaticHandler::StaticHandler(const std::string& location_path, const NginxConfig
 
 
 /* Main Function: Format the response based on client request */
-// TODO: create and return an http::response object instead of a string
 http::response<http::string_body> StaticHandler::handle_request(const http::request<http::string_body>& request)
 {
-  // Get the extension of the file (i.e., txt)
-  /*std::size_t dot = fullpath_.find_last_of(".");
+  std::ostringstream oss;
+  oss << request.target();
+  std::string fullpath = oss.str();
+  
+  std::size_t dot = fullpath.find_last_of(".");
   std::string extension = "";
   
   if (dot != std::string::npos)
-    extension = fullpath_.substr(dot+1);
+    extension = fullpath.substr(dot+1);
 
   // Get the file content (reading its data)
   std::string file_content;
-  int code = ReadFile(fullpath_, file_content);
+  int code = ReadFile(fullpath, file_content);
 
   // If file doesnt exist return 404
   if (code == 1){
-    NotFoundResponse obj;
-    return obj.GetResponse();
+    NotFoundHandler obj(location_path, config);
+    return obj.handle_request(request);
   }
   
   // Get the content type (i.e., text/html)
@@ -41,32 +43,32 @@ http::response<http::string_body> StaticHandler::handle_request(const http::requ
   // Get the length of the data
   std::string content_length = std::to_string(file_content.length());
 
+  // Get the version
+  size_t version = request.version();
+
   // Finally, format the proper response message and return it
-  std::string response = FormatResponse(content_type, content_length, file_content);
-*/
-  //return response;
-  http::response<http::string_body> res(http::status::ok, 11);
+  http::response<http::string_body> res = FormatResponse(version, content_type, content_length, file_content);
+
   return res;
 }
 
 /* Collects all data and format the proper response message */
-std::string StaticHandler::FormatResponse(std::string content_type,
-					   std::string content_length,
-					   std::string file_content) {
+http::response<http::string_body> StaticHandler::FormatResponse(size_t version,
+								std::string content_type,
+								std::string content_length,
+								std::string file_content) {
   
-  try {
-    std::stringstream response_msg;
-    response_msg << "HTTP/1.1 200 OK\r\n";
-    response_msg << "Content-Type: " << content_type << "\r\n";
-    response_msg << "Content-Length: " << content_length;
-    response_msg << "\r\n\r\n";
-    response_msg << file_content;
-    
-    return response_msg.str();
-    
-  } catch(int error) {
-    return "";
-  }
+  /* Generate the response */
+  http::response<http::string_body> res;
+
+  // Complete necessary fields
+  res.version(version);
+  res.result(http::status::ok);
+  res.set(http::field::content_type, content_type);
+  res.set(http::field::content_length, content_length);
+  res.body() = file_content;
+
+  return res;
 }
 
 /* Based on file extension, return proper content type attribute */

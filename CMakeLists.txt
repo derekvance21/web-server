@@ -37,7 +37,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 # TODO(!): Update name and srcs
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
-add_library(session_lib src/session.cc src/request.cc src/request_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/tools.cc)
+add_library(session_lib src/session.cc src/request.cc src/request_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc)
 add_library(echo_lib src/request_handler.cc src/echo_handler.cc)
 add_library(not_found_lib src/request_handler.cc src/not_found_handler.cc)
 add_library(request_lib src/request.cc)
@@ -67,16 +67,12 @@ add_executable(session_test tests/unit/session_test.cc)
 target_link_libraries(session_test session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
-add_executable(session_test tests/unit/session_test.cc)
-target_link_libraries(session_test session_lib gtest_main logger_lib
-                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
-
 add_executable(server_test tests/unit/server_test.cc)                   
 target_link_libraries(server_test config_parser_lib server_lib  static_lib session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 		    
-#add_executable(static_test tests/unit/static_test.cc)
-#target_link_libraries(static_test static_lib gtest_main)
+add_executable(static_test tests/unit/static_test.cc)
+target_link_libraries(static_test static_lib gtest_main)
 
 
 # TODO(!): Update with test binary
@@ -86,7 +82,7 @@ gtest_discover_tests(not_found_response_test WORKING_DIRECTORY ${CMAKE_CURRENT_S
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
-#gtest_discover_tests(static_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(static_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 #add_test(NAME IntegrationTest 
  #   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
