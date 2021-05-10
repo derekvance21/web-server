@@ -15,6 +15,7 @@
 #include <sstream>
 #include <map>
 #include <boost/beast/http.hpp>
+#include <boost/beast/core.hpp>
 #include "session.h"
 #include "request_handler.h"
 #include "echo_handler.h"
@@ -71,16 +72,30 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       Logger::getInstance()->log_data_read(req_string);
       memset(data_, 0, 1024);
 
-      // TODO: replace the use of the Request object with a boost::beast::http::request
-      Request req(req_string);
-      req.ExtractPath();
-      std::string req_path = req.GetPath();
+      // Use http::request_parser to parse our request and put it into an http::request
+      http::request_parser<http::string_body> req_parser;
+      req_parser.eager(true);
+      boost::system::error_code ec;
+      req_parser.put(boost::asio::buffer(req_string),ec);
+      if(ec){
+        std::cout << "Request parsing error: " << ec.message() << std::endl;
+      }
+      http::request<http::string_body> req = req_parser.get();
+      // Get target and convert to string
+      std::ostringstream oss;
+      oss << req.target();
+      std::string req_path = oss.str();
+
+      // incase our request path is not present in out location map, use this 404 handler configured to "/"
+      NginxConfig config_child;
+      std::string handler = "NotFoundHandler";
+      RequestHandler* request_handler = createHandler("/", handler, config_child);
 
       // iterate over location map to make appropriate request handlers
       std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
       for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
         std::string loc = iter->first;
-        std::string handler = iter->second.first; 
+        handler = iter->second.first; 
         NginxConfig child_block = iter->second.second;
 
         // if req_path starts with loc - there's a match
@@ -90,15 +105,18 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
           continue;
         } 
         
-        RequestHandler* request_handler = createHandler(loc, handler, child_block);
-        //TODO: pass http::request into handle_request() function
-        http::request<http::string_body> req(http::verb::get, "empty", 11);
-        http::response<http::string_body> response = request_handler->handle_request(req);
-
+        // we have found a match, so change request_handler to new location/type
+        request_handler = createHandler(loc, handler, child_block);
       }
+      
+      // pass http::request into handle_request, called on our request_handler
+      http::response<http::string_body> res = request_handler->handle_request(req);
+      std::ostringstream response_stream;
+      response_stream << res.body();
+      std::string response_string = oss.str();
 
-      // TODO: write response object to server
-      //handle_write(response_msg, handle_type);
+      // write response to server
+      handle_write(response_string, handler);
 
       // success exit code
       return 0;
