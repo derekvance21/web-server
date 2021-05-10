@@ -67,6 +67,9 @@ std::map<std::string, std::pair<std::string, NginxConfig>> NginxConfig::GetLocat
         statement->tokens_.front() == "location" &&
         statement->child_block_.get() != nullptr) {
       std::string location = statement->tokens_.at(1);
+      if(location[0] == '\"' && location.back() == '\"'){
+        location = location.substr(1, location.size()-2);
+      }
       std::string handler = statement->tokens_.back();
       NginxConfig child = *(statement->child_block_);
 
@@ -232,8 +235,9 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           last_token_type == TOKEN_TYPE_STATEMENT_END ||	
           last_token_type == TOKEN_TYPE_START_BLOCK ||	
           last_token_type == TOKEN_TYPE_END_BLOCK ||	
-          last_token_type == TOKEN_TYPE_NORMAL) {	
-        if (last_token_type != TOKEN_TYPE_NORMAL) {	
+          last_token_type == TOKEN_TYPE_NORMAL ||
+          last_token_type == TOKEN_TYPE_QUOTED_STRING) {	
+        if (last_token_type != TOKEN_TYPE_NORMAL && last_token_type != TOKEN_TYPE_QUOTED_STRING) {	
           config_stack.top()->statements_.emplace_back(	
               new NginxConfigStatement);	
         }	

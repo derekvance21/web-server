@@ -1,6 +1,6 @@
 port 8080; # The port my server listens on
 
-location /echo EchoHandler {
+location "/echo" EchoHandler {
 }
 
 location /static StaticHandler {
