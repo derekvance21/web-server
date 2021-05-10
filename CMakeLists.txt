@@ -67,9 +67,10 @@ add_executable(server_test tests/unit/server_test.cc)
 target_link_libraries(server_test config_parser_lib server_lib  static_lib session_lib gtest_main logger_lib
                     Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 		    
+
 add_executable(static_handler_test tests/unit/static_handler_test.cc)
 target_link_libraries(static_handler_test static_lib gtest_main config_parser_lib logger_lib
-                    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
+		    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 
 # TODO(!): Update with test binary
@@ -80,11 +81,11 @@ gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
-#add_test(NAME IntegrationTest 
- #   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
-  #  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration)
+add_test(NAME IntegrationTest 
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration)
 
 # TODO(!): Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)   
 generate_coverage_report(TARGETS webserver server_lib session_lib logger_lib TESTS config_parser_test session_test)  
-generate_coverage_report(TARGETS webserver server_lib session_lib logger_lib TESTS config_parser_test echo_handler_test session_test server_test)
+generate_coverage_report(TARGETS webserver server_lib session_lib static_lib not_found_lib echo_lib logger_lib TESTS config_parser_test echo_handler_test session_test static_handler_test not_found_handler_test server_test)
