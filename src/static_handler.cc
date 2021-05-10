@@ -3,7 +3,6 @@
 #include <string>
 #include <fstream>
 #include "static_handler.h"
-#include "request.h"
 #include "not_found_handler.h"
 #include <boost/beast/http.hpp>
 
@@ -17,9 +16,7 @@ StaticHandler::StaticHandler(const std::string& location_path, const NginxConfig
 /* Main Function: Format the response based on client request */
 http::response<http::string_body> StaticHandler::handle_request(const http::request<http::string_body>& request)
 {
-  std::ostringstream oss;
-  oss << request.target();
-  std::string fullpath = oss.str();
+  std::string fullpath = GetPath(request);
   
   std::size_t dot = fullpath.find_last_of(".");
   std::string extension = "";
@@ -50,6 +47,44 @@ http::response<http::string_body> StaticHandler::handle_request(const http::requ
   http::response<http::string_body> res = FormatResponse(version, content_type, content_length, file_content);
 
   return res;
+}
+
+/* Generates the path for the file requested */
+std::string StaticHandler::GetPath(const http::request<http::string_body>& request){
+  
+  std::ostringstream oss;
+  oss << request.target();
+  std::string uri_path = oss.str();
+  std::string req_path = "", full_path = "";
+
+  // Check for whether the handler's location is specified in the uri path
+  // Ex. /static, /static1, /static2 etc.
+  size_t loc_found = uri_path.find(location_path, 0);
+  if (loc_found != std::string::npos)
+    req_path = uri_path.substr(loc_found+location_path.length());
+  
+  // if file path passed correctly, look for root path in child config block
+  if (!config.statements_.empty() &&
+      config.statements_[0]->tokens_.size() == 2 &&
+      config.statements_[0]->tokens_[0] == "root"){
+    // Remove double quoatations from root path
+    std::string root = config.statements_[0]->tokens_[1];
+    size_t root_length = root.length();
+
+    // In future: might improve by using a predefined library if exists
+    if ( root_length > 0 && (root[0] == '"' || root[0] == '\'')){
+      root = root.erase(0, 1);
+      root_length = root.length();
+    }
+
+    if ( root_length > 0 && (root[root_length - 1] == '"' || root[root_length - 1] == '\''))
+      root = root.erase(root_length - 1);
+
+    full_path = root + req_path;
+  }
+
+  // Note: if full_path is empty or invalid, ReadFile() will catch it and 404 will be returned
+  return full_path;
 }
 
 /* Collects all data and format the proper response message */

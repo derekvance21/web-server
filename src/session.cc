@@ -21,7 +21,6 @@
 #include "echo_handler.h"
 #include "static_handler.h"
 #include "not_found_handler.h"
-#include "request.h"
 #include "logger.h"
 #include "config_parser.h"
 
@@ -32,6 +31,7 @@ using boost::asio::ip::tcp;
 
 Session::Session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
   : socket_(io_service), test_flag(test_flag), loc_map_(loc_map) {}
+
 
 
 /* Main function: starts off the reading from client */

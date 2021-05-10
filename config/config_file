@@ -4,5 +4,5 @@ location /echo EchoHandler {
 }
 
 location /static StaticHandler {
-  root "./files";  # supports relative path
+  root "./static_folder";  # supports relative path
 }

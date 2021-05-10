@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
-#include "request.h"
 #include "static_handler.h"
+#include "config_parser.h"
 #include <boost/asio.hpp>
 #include <boost/beast/http.hpp>
 #include <sstream>
@@ -24,13 +24,39 @@ class StaticHandlerTest : public ::testing::Test {
 /* ---------------- */
 TEST_F(StaticHandlerTest, HTMLResponseTest)
 {
+  parser.Parse("example_config/config_file", &out_config);
+    
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
-  req.target("./static_folder/hello.html");
+  req.target("/static/hello.html");
+
+  // Get Both Expected/Received Response
+  http::response<http::string_body> res = req_handler.handle_request(req);
+  std::ostringstream osresponse_gotten;
+  osresponse_gotten << res;
+
+  std::string response_gotten = osresponse_gotten.str();
+  std::string expected_response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 21\r\n\r\nThis is Team Juzang!\n";
+  
+
+  EXPECT_TRUE(response_gotten == expected_response);
+}
+
+TEST_F(StaticHandlerTest, SingleQuotedConfigHTMLResponseTest)
+{
+  parser.Parse("example_config/config_file_single", &out_config);
+    
+  // Set-Up Response Message To Be Sent
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
+
+  // Generate base request
+  http::request<http::string_body> req;
+  req.target("/static/hello.html");
 
   // Get Both Expected/Received Response
   http::response<http::string_body> res = req_handler.handle_request(req);
@@ -47,13 +73,15 @@ TEST_F(StaticHandlerTest, HTMLResponseTest)
 
 TEST_F(StaticHandlerTest, EmptyFileResponseTest)
 {
+  parser.Parse("example_config/config_file", &out_config);
+  
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
-  req.target("./static_folder/empty.html");
+  req.target("/static/empty.html");
 
   // Get Both Expected/Received Response
   http::response<http::string_body> res = req_handler.handle_request(req);
@@ -69,11 +97,13 @@ TEST_F(StaticHandlerTest, EmptyFileResponseTest)
 
 TEST_F(StaticHandlerTest, TxTResponseTest)
 {
-  std::string path = "./static_folder/file.txt";
+  parser.Parse("example_config/config_file", &out_config);
+  
+  std::string path = "/static/file.txt";
 
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
@@ -93,11 +123,13 @@ TEST_F(StaticHandlerTest, TxTResponseTest)
 
 TEST_F(StaticHandlerTest, NonExistantFileResponseTest)
 {
-  std::string path = "./static_folder/non-existant.txt";
+  parser.Parse("example_config/config_file", &out_config);
+  
+  std::string path = "/static/non-existant.txt";
 
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
@@ -117,11 +149,13 @@ TEST_F(StaticHandlerTest, NonExistantFileResponseTest)
 
 TEST_F(StaticHandlerTest, JPEGResponseTest)
 {
-  std::string path = "./static_folder/test_jpeg.jpeg";
+  parser.Parse("example_config/config_file", &out_config);
+  
+  std::string path = "/static/test_jpeg.jpeg";
 
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
@@ -141,11 +175,13 @@ TEST_F(StaticHandlerTest, JPEGResponseTest)
 
 TEST_F(StaticHandlerTest, PNGResponseTest)
 {
-  std::string path = "./static_folder/download.png";
+  parser.Parse("example_config/config_file", &out_config);
+  
+  std::string path = "/static/download.png";
 
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
@@ -165,11 +201,13 @@ TEST_F(StaticHandlerTest, PNGResponseTest)
 
 TEST_F(StaticHandlerTest, ZIPResponseTest)
 {
-  std::string path = "./static_folder/file.zip";
+  parser.Parse("example_config/config_file", &out_config);
+  
+  std::string path = "/static/file.zip";
 
   // Set-Up Response Message To Be Sent
-  std::string temp = "/static";
-  StaticHandler req_handler(temp, out_config);
+  std::string location_path = "/static";
+  StaticHandler req_handler(location_path, out_config);
 
   // Generate base request
   http::request<http::string_body> req;
