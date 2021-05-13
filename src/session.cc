@@ -20,6 +20,7 @@
 #include "request_handler.h"
 #include "echo_handler.h"
 #include "static_handler.h"
+#include "reverse_proxy_handler.h"
 #include "not_found_handler.h"
 #include "logger.h"
 #include "config_parser.h"
@@ -87,6 +88,9 @@ RequestHandler* createHandler(std::string location, std::string handler, NginxCo
   }
   if (handler == "EchoHandler") {
     return new EchoHandler(location, config_child);
+  }
+  if (handler == "ReverseProxyHandler") {
+    return new ReverseProxyHandler(location, config_child);
   }
 
   return new NotFoundHandler(location, config_child);

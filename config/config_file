@@ -6,3 +6,12 @@ location /echo EchoHandler {
 location /static StaticHandler {
   root "./static_folder";  # supports relative path
 }
+
+location /uw ReverseProxyHandler {
+  destination "www.washington.edu" 80;
+}
+
+location /vaxx ReverseProxyHandler {
+  destination http://34.105.8.173/static/ 80; # vaxx server
+  # can test by requesting files text.txt, picture.jpg, or webpage.html
+}

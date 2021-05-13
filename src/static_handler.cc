@@ -68,19 +68,7 @@ std::string StaticHandler::GetPath(const http::request<http::string_body>& reque
   if (!config.statements_.empty() &&
       config.statements_[0]->tokens_.size() == 2 &&
       config.statements_[0]->tokens_[0] == "root"){
-    // Remove double quoatations from root path
     std::string root = config.statements_[0]->tokens_[1];
-    size_t root_length = root.length();
-
-    // In future: might improve by using a predefined library if exists
-    if ( root_length > 0 && (root[0] == '"' || root[0] == '\'')){
-      root = root.erase(0, 1);
-      root_length = root.length();
-    }
-
-    if ( root_length > 0 && (root[root_length - 1] == '"' || root[root_length - 1] == '\''))
-      root = root.erase(root_length - 1);
-
     full_path = root + req_path;
   }
 
