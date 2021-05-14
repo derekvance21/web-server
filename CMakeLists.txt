@@ -38,16 +38,18 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
 add_library(status_lib src/status.cc)
-add_library(session_lib src/session.cc src/request_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/status.cc src/status_handler.cc)
+add_library(session_lib src/session.cc src/request_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/status.cc src/status_handler.cc src/reverse_proxy_handler.cc src/http_client.cc)
 add_library(echo_lib src/request_handler.cc src/echo_handler.cc)
 add_library(not_found_lib src/request_handler.cc src/not_found_handler.cc)
 add_library(logger_lib src/logger.cc)
 add_library(static_lib src/request_handler.cc src/not_found_handler.cc src/static_handler.cc)
 add_library(status_handler_lib src/request_handler.cc src/status.cc src/status_handler.cc)
+add_library(reverse_proxy_lib src/request_handler.cc src/reverse_proxy_handler.cc src/http_client.cc)
+add_library(http_client_lib src/http_client.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     
-target_link_libraries(webserver pthread server_lib session_lib static_lib echo_lib status_lib status_handler_lib config_parser_lib logger_lib 
+target_link_libraries(webserver pthread server_lib session_lib static_lib echo_lib status_lib status_handler_lib config_parser_lib logger_lib reverse_proxy_lib http_client_lib
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
@@ -74,6 +76,10 @@ add_executable(static_handler_test tests/unit/static_handler_test.cc)
 target_link_libraries(static_handler_test static_lib gtest_main config_parser_lib logger_lib
 		    Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
+add_executable(reverse_proxy_handler_test tests/unit/reverse_proxy_handler_test.cc)
+target_link_libraries(reverse_proxy_handler_test reverse_proxy_lib gtest_main gmock_main config_parser_lib logger_lib http_client_lib
+            Boost::system Boost::log_setup Boost::log)
+
 
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -82,6 +88,7 @@ gtest_discover_tests(not_found_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SO
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(reverse_proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME IntegrationTest 
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
@@ -89,4 +96,4 @@ add_test(NAME IntegrationTest
 
 # TODO(!): Update with target/test targets
 include(cmake/CodeCoverageReportConfig.cmake)    
-generate_coverage_report(TARGETS webserver server_lib session_lib static_lib not_found_lib echo_lib status_lib status_handler_lib logger_lib TESTS config_parser_test echo_handler_test session_test static_handler_test not_found_handler_test server_test)
+generate_coverage_report(TARGETS webserver server_lib session_lib static_lib not_found_lib echo_lib status_lib status_handler_lib logger_lib TESTS config_parser_test echo_handler_test session_test static_handler_test not_found_handler_test server_test reverse_proxy_handler_test)

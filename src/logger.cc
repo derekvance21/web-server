@@ -98,3 +98,7 @@ void Logger::log_data_write(std::string log_message, std::string type){
 void Logger::log_session_end(){
      BOOST_LOG_SEV(slg, info) << "Session Terminating.\n";
 }
+
+void Logger::log_info(std::string log_message){
+     BOOST_LOG_SEV(slg, info) << log_message << "\n";
+}

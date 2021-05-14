@@ -38,6 +38,7 @@ class Logger
         void log_server_initialization_failure(std::string log_message);
         void log_data_read(std::string& log_message);
         void log_data_write(std::string log_message, std::string type);
+        void log_info(std::string log_message);
         void log_session_end();
 };
 

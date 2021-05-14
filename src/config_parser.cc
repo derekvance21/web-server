@@ -241,8 +241,19 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           config_stack.top()->statements_.emplace_back(	
               new NginxConfigStatement);	
         }	
+
+        // Remove double quotations from token
+        size_t token_length = token.length();
+        if ( token_length > 0 && (token[0] == '"' || token[0] == '\'')){
+          token = token.erase(0, 1);
+          token_length = token.length();
+        }
+        if ( token_length > 0 && (token[token_length - 1] == '"' || token[token_length - 1] == '\''))
+          token = token.erase(token_length - 1);
+        
         config_stack.top()->statements_.back().get()->tokens_.push_back(	
             token);	
+
       } else {	
         // Error.	
         break;	
