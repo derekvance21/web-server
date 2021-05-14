@@ -20,6 +20,7 @@
 #include "request_handler.h"
 #include "echo_handler.h"
 #include "static_handler.h"
+#include "status_handler.h"
 #include "not_found_handler.h"
 #include "logger.h"
 #include "config_parser.h"
@@ -29,9 +30,8 @@ namespace http = boost::beast::http;
 using boost::asio::ip::tcp;
 
 
-Session::Session(boost::asio::io_service& io_service, bool test_flag, const loc_map_type& loc_map )
-  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map) {}
-
+Session::Session(boost::asio::io_service& io_service, Status* status, bool test_flag, const loc_map_type& loc_map )
+  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map), status_(status) {}
 
 
 /* Main function: starts off the reading from client */
@@ -77,18 +77,23 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
       }
       
       // pass http::request into handle_request, called on our request_handler
-      return request_handler->handle_request(req);
+      http::response<http::string_body> res = request_handler->handle_request(req);
+      // TODO: get the http::status from res and save it as res_status
+      // status_->insert_request(loc, res_status);
+      return res;
 }
 
 
-RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child) {
+RequestHandler* Session::createHandler(std::string location, std::string handler, NginxConfig config_child) {
   if (handler == "StaticHandler") {
     return new StaticHandler(location, config_child);
   }
   if (handler == "EchoHandler") {
     return new EchoHandler(location, config_child);
   }
-
+  if (handler == "StatusHandler") {
+    return new StatusHandler(location, config_child, status_);
+  }
   return new NotFoundHandler(location, config_child);
 }
 

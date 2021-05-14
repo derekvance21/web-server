@@ -17,6 +17,7 @@
 #include <boost/asio.hpp>
 #include <map>
 #include "session.h"
+#include "status.h"
 
 using boost::asio::ip::tcp;
 
@@ -28,13 +29,14 @@ public:
   Server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag = false );
   int start_accept();
   int handle_accept(Session* new_session, const boost::system::error_code& error);
-  
+  Status* get_status();
 private:
   // location map - key is the location set by config, value is the location to fetch those resources from
   // special case: if value is $echo, then use echoing response 
   std::map<std::string, std::pair<std::string, NginxConfig>> loc_map_;
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
+  Status* status_;
   bool test_flag;
 };
 

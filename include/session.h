@@ -17,11 +17,10 @@
 #include <map>
 #include "request_handler.h"
 #include "config_parser.h"
+#include "status.h"
 
 using boost::asio::ip::tcp;
 class NginxConfig;
-
-RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
 
 class Session
 {
@@ -29,8 +28,10 @@ public:
   typedef std::map<std::string, std::pair<std::string,NginxConfig>> loc_map_type;
 
   Session(boost::asio::io_service& io_service, 
+          Status* status,
           bool test_flag = false,
           const loc_map_type& loc_map = loc_map_type());
+  RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
   http::request<http::string_body> FormatRequest(std::string req_string);
   http::response<http::string_body> url_dispatcher(http::request<http::string_body> req, std::string req_path);
   int send_response(const boost::system::error_code& error, size_t bytes_transferred);
@@ -44,6 +45,7 @@ public:
 
 private:
   loc_map_type loc_map_;
+  Status* status_;
   bool test_flag;
   enum { max_length = 1024 };
   char data_[max_length];

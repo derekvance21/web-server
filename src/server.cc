@@ -16,6 +16,7 @@
 #include "session.h"
 #include "config_parser.h"
 #include "logger.h"
+#include "status.h"
 
 using boost::asio::ip::tcp;
 
@@ -26,11 +27,13 @@ Server::Server(boost::asio::io_service& io_service, NginxConfig& config, bool te
 	  test_flag(test_flag)
 {
   loc_map_ = config.GetLocationMap();
+  status_ = new Status(loc_map_);
+
 }
 
 int Server::start_accept()
 {
-  Session* new_session = new Session(io_service_, false, loc_map_);
+  Session* new_session = new Session(io_service_, status_, false, loc_map_);
   acceptor_.async_accept(new_session->socket_,
 			 boost::bind(&Server::handle_accept, this, new_session,
 				     boost::asio::placeholders::error));
@@ -52,4 +55,8 @@ int Server::handle_accept(Session* new_session, const boost::system::error_code&
     start_accept();
   
   return 0;
+}
+
+Status* Server::get_status() {
+  return status_;
 }
