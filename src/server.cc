@@ -28,7 +28,30 @@ Server::Server(boost::asio::io_service& io_service, NginxConfig& config, bool te
 {
   loc_map_ = config.GetLocationMap();
   status_ = new Status(loc_map_);
+  record_handlers();
 
+}
+
+/* Helper: records the handlers from location map into the status object */
+/* Done only once at startup since the config file is unchanged after */
+int Server::record_handlers()
+{
+  // Loop through the location map and get the location and name of handler and store it
+  for (std::map<std::string, std::pair<std::string, NginxConfig>>::iterator it = loc_map_.begin(); it != loc_map_.end(); ++it) {
+
+    try {
+      std::string location = it->first;
+      std::string handler = it->second.first;
+
+      status_->insert_handler(handler, location);
+
+    } catch (int error) {
+      return 1;
+    }
+  }
+
+  // Return 0 on success
+  return 0;
 }
 
 int Server::start_accept()

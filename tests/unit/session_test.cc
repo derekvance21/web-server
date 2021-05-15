@@ -12,6 +12,8 @@ namespace http = boost::beast::http;
 class SessionFixtureTest : public ::testing::Test {
   protected:
     boost::asio::io_service io_service;
+    NginxConfigParser parser;
+    NginxConfig out_config;
 };
 
 
@@ -21,8 +23,13 @@ class SessionFixtureTest : public ::testing::Test {
 
 TEST_F(SessionFixtureTest, BasicSessionTest){
 
+  std::map<std::string, std::pair<std::string, NginxConfig>> loc_map;
+
+  // Initialize a status object with requests/handlers
+  Status* status = new Status(loc_map);
+  
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr);
+  Session* my_session = new Session(io_service, status, false, loc_map);
   io_service.run();
 
   // Data to be tested
@@ -45,8 +52,13 @@ TEST_F(SessionFixtureTest, BasicSessionTest){
 
 TEST_F(SessionFixtureTest, EmptyMessageSessionTest){
 
+  std::map<std::string, std::pair<std::string, NginxConfig>> loc_map;
+
+  // Initialize a status object with requests/handlers
+  Status* status = new Status(loc_map);
+  
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr);
+  Session* my_session = new Session(io_service, status, false, loc_map);
   io_service.run();
 
   // Data to be tested
@@ -67,8 +79,13 @@ TEST_F(SessionFixtureTest, EmptyMessageSessionTest){
 
 TEST_F(SessionFixtureTest, MoreThanMaxMessageSessionTest){
 
+  std::map<std::string, std::pair<std::string, NginxConfig>> loc_map;
+
+  // Initialize a status object with requests/handlers
+  Status* status = new Status(loc_map);
+  
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr);
+  Session* my_session = new Session(io_service, status, false, loc_map);
   io_service.run();
 
   // Data to be tested (more than 1024)

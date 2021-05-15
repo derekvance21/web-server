@@ -16,15 +16,15 @@ class Status
 {
     public:
         Status(std::map<std::string, std::pair<std::string, NginxConfig>> loc_map);
-        std::map<std::string, http::status> get_requests();
-        std::map<std::string, std::string> get_request_handlers();
-        void insert_request(std::string, http::status);
+        std::map<std::string, std::vector<int>> get_requests();
+        std::map<std::string, std::vector<std::string>> get_request_handlers();
+        void insert_request(std::string, int);
         void insert_handler(std::string, std::string);
 
     private:
         std::map<std::string, std::pair<std::string, NginxConfig>> loc_map_;
-        std::map<std::string, http::status> requests_; // map of url and response code
-        std::map<std::string, std::string> request_handlers_;   // map of handler and url 
+        std::map<std::string, std::vector<int>> requests_; // map of url and response code
+        std::map<std::string, std::vector<std::string>> request_handlers_;   // map of handler and url 
 };
 
 #endif

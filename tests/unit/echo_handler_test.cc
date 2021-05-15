@@ -54,8 +54,6 @@ TEST_F(EchoHandlerTest, BasicResponse)
   std::string response_gotten = osresponse_gotten.str();
   std::string response_expect = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 33\r\n\r\n HTTP/1.1\r\n\r\nThis is Team Juzang!";
 
-  std::cerr << "LOL " << response_gotten << std::endl;
-
   // Both Should Be Equal
   EXPECT_TRUE(response_gotten == response_expect);
 }

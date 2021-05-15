@@ -27,6 +27,7 @@ class Server
 {
 public:
   Server(boost::asio::io_service& io_service, NginxConfig& config, bool test_flag = false );
+  int record_handlers();
   int start_accept();
   int handle_accept(Session* new_session, const boost::system::error_code& error);
   Status* get_status();

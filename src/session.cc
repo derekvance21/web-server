@@ -52,36 +52,39 @@ void Session::handle_read()
 }
 
 http::response<http::string_body> Session::url_dispatcher(http::request<http::string_body> req, std::string req_path) {
+  
   // Instantiate the request handler
-      std::string loc = "", handler = "NotFoundHandler";
-      NginxConfig child_block;
-      RequestHandler* request_handler = createHandler(loc, handler, child_block);
+  std::string loc = "", handler = "NotFoundHandler";
+  NginxConfig child_block;
+  RequestHandler* request_handler = createHandler(loc, handler, child_block);
       
-      // iterate over location map to make appropriate request handlers
-      std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
-      for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
-        loc = iter->first;
-        handler = iter->second.first; 
-        child_block = iter->second.second;
+  // iterate over location map to make appropriate request handlers
+  std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
+  for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
+    loc = iter->first;
+    handler = iter->second.first; 
+    child_block = iter->second.second;
 
-        // if req_path starts with loc - there's a match
-        int pos = req_path.find(loc);
-        if (pos != 0) {
-          // if loc wasn't at the start of req_path - not a match
-          continue;
-        } 
+    // if req_path starts with loc - there's a match
+    int pos = req_path.find(loc);
+    if (pos != 0) {
+      // if loc wasn't at the start of req_path - not a match
+      continue;
+    } 
         
-        // we have found a match, so change request_handler to new location/type
-        request_handler = createHandler(loc, handler, child_block);
-	      std::cerr << handler << " " << loc << std::endl;
-	      break;
-      }
+    // we have found a match, so change request_handler to new location/type
+    request_handler = createHandler(loc, handler, child_block);
+    break;
+  }
       
-      // pass http::request into handle_request, called on our request_handler
-      http::response<http::string_body> res = request_handler->handle_request(req);
-      // TODO: get the http::status from res and save it as res_status
-      // status_->insert_request(loc, res_status);
-      return res;
+  // pass http::request into handle_request, called on our request_handler
+  http::response<http::string_body> res = request_handler->handle_request(req);
+  
+  // Get the http::status from res and save it as res_status
+  int res_status = res.result_int();
+  status_->insert_request(loc, res_status);
+  
+  return res;
 }
 
 
@@ -142,9 +145,6 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       std::ostringstream response_stream;
       response_stream << res;
       std::string response_string = response_stream.str();
-
-      std::cerr << "-------" << std::endl;
-      std::cerr << response_string << std::endl;
 
       // write response to client
       handle_write(response_string, "string");

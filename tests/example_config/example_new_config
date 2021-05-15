@@ -6,3 +6,6 @@ location "/echo" EchoHandler {
 location /static StaticHandler {
   root ../tests/static_folder;  # supports relative path
 }
+
+location "/status" StatusHandler {
+}
