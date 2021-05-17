@@ -94,10 +94,14 @@ http::response<http::string_body> ReverseProxyHandler::handle_request(const http
   }
 
   std::string proxy_target = endpoint_ + std::string{request.target().substr(location_path.size())};
+
   if (proxy_target == "") proxy_target = "/";
   http::request<http::string_body> proxy_request{request};
   proxy_request.target(proxy_target);
   proxy_request.set(http::field::host, host_);
+  proxy_request.set(http::field::user_agent, "teamjuzang/1.0");
+  proxy_request.set(http::field::accept, "*/*");
+
 
   Logger::getInstance()->log_info("Making proxy request to " + host_ + " with target " + proxy_target + " at port " + port_);
   std::ostringstream stream;
@@ -107,10 +111,54 @@ http::response<http::string_body> ReverseProxyHandler::handle_request(const http
   boost::system::error_code ec;
   http::response<http::string_body> res = client_->make_request(host_, port_, proxy_request, ec);
 
+/*Redirect status codes:
+  301: Moved Permanently
+  302: Found
+  303: See Other
+  307: Temporary Redirect
+  308: Permanent Redirect */
+  
+  const int REDIRECTION_CODES[5] = {301, 302, 303, 307, 308};
+  const unsigned short ALLOWED_REDIRECTS = 10; 
+  unsigned short current_redirects = 1; 
+
+  while ( std::find(std::begin(REDIRECTION_CODES), std::end(REDIRECTION_CODES), res.result_int()) != std::end(REDIRECTION_CODES) && current_redirects < ALLOWED_REDIRECTS)
+  {
+
+    current_redirects++;
+    std::string new_destination = std::string(res.base().at("Location"));
+
+    //If redirect location starts with HTTPS, server cannot handle it
+    if (new_destination.rfind("https", 0) == 0) 
+    {
+      Logger::getInstance()->log_info("Unable to redirect to HTTPS page");
+      return internal_server_error();
+    }
+
+    parse_url(new_destination, host_, endpoint_);
+    if (endpoint_ == "") endpoint_ = "/";
+
+    proxy_request.target(endpoint_);
+    proxy_request.set(http::field::host, host_);
+
+    res = client_->make_request(host_, port_, proxy_request, ec);
+    if (ec) {
+      Logger::getInstance()->log_error("Unable to make redirected reverse proxy request: " + ec.message());
+      return internal_server_error();
+    }
+
+  }
+
+  if (current_redirects == ALLOWED_REDIRECTS)
+  {
+      Logger::getInstance()->log_error("Exceeded allowed limit of redirects");
+      return internal_server_error();
+  }
+
   // not_connected happens sometimes
   // so don't bother reporting it.
   if (ec) {
-    BOOST_LOG_TRIVIAL(error) << "Unable to make reverse proxy request: " << ec.message();
+    Logger::getInstance()->log_error("Unable to make reverse proxy request: " + ec.message());
     return internal_server_error();
   }
 

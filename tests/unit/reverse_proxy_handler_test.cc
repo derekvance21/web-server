@@ -165,3 +165,69 @@ TEST_F(ReverseProxyHandlerTest, ConfigurePort)
   EXPECT_EQ(http::status::ok, res.result());
   EXPECT_EQ(proxy_res.body(), res.body());
 }
+
+TEST_F(ReverseProxyHandlerTest, SingleRedirect)
+{
+
+  out_config.statements_[0]->tokens_[1] = "http://www.ucla.edu";
+
+
+  // Will first return 302, then attempt to
+  // request HTTPS will fail and return internal error.
+  mock_client = new MockHTTPClient();
+  http::response<http::string_body> proxy_res;
+  proxy_res.result(http::status::found);
+  proxy_res.set(http::field::location,  "https://www.ucla.edu");
+  http::response<http::string_body> ise_res;
+  ise_res.result(http::status::internal_server_error);
+
+  EXPECT_CALL(*mock_client, make_request("www.ucla.edu", "80", _, _))
+        .Times(1)
+        .WillOnce(Return(proxy_res));
+
+  std::string location_path = "/proxy";
+  ReverseProxyHandler req_handler(location_path, out_config, mock_client);
+  http::request<http::string_body> req;
+  req.method(http::verb::get);
+  req.target(location_path);
+
+  http::response<http::string_body> res = req_handler.handle_request(req);
+
+  EXPECT_EQ(http::status::internal_server_error, res.result());
+
+}
+
+TEST_F(ReverseProxyHandlerTest, ReachLimitOfRedirects)
+{
+
+  out_config.statements_[0]->tokens_[1] = "http://34.105.8.173/";
+
+
+  // Will go over limit of 10 redirects, then return ISE.
+  mock_client = new MockHTTPClient();
+  http::response<http::string_body> proxy_res;
+  proxy_res.result(http::status::found);
+  proxy_res.set(http::field::location,  "http://www.ucla.edu");
+
+
+  http::response<http::string_body> ise_res;
+  ise_res.result(http::status::internal_server_error);
+
+  EXPECT_CALL(*mock_client, make_request("34.105.8.173", "80", _, _))
+        .Times(1)
+        .WillOnce(Return(proxy_res));
+  EXPECT_CALL(*mock_client, make_request("www.ucla.edu", "80", _, _))
+        .Times(9)
+        .WillRepeatedly(Return(proxy_res));
+
+  std::string location_path = "/proxy";
+  ReverseProxyHandler req_handler(location_path, out_config, mock_client);
+  http::request<http::string_body> req;
+  req.method(http::verb::get);
+  req.target(location_path);
+
+  http::response<http::string_body> res = req_handler.handle_request(req);
+
+  EXPECT_EQ(http::status::internal_server_error, res.result());
+
+}
