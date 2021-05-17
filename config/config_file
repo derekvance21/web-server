@@ -1,10 +1,10 @@
-port 8080;
+port 8080; # The port my server listens on
 
-location /echo EchoHandler {
+location "/echo" EchoHandler {
 }
 
 location /static StaticHandler {
-  root "./static_folder";  # supports relative path
+  root ../tests/static_folder;  # supports relative path
 }
 
 location /uw ReverseProxyHandler {

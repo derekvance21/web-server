@@ -31,3 +31,4 @@ steps:
     '.'
   ]
 images: ['gcr.io/$PROJECT_ID/team-juzang:base', 'gcr.io/$PROJECT_ID/team-juzang:latest', 'gcr.io/$PROJECT_ID/team-juzang-coverage:latest']
+timeout: 1200s
