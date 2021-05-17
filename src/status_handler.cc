@@ -33,11 +33,12 @@ http::response<http::string_body> StatusHandler::handle_request(const http::requ
   // Loop through the map of urls -> list of status codes and display each of them
   for (std::map<std::string, std::vector<int>>::iterator it = requests.begin(); it != requests.end(); ++it) {
     std::vector<int> status_vec = it->second;
+    int request_count = status_vec.size();
 
     // Breakdown each request and its returned status code
     for (int http_status : status_vec) {
       std::string status = std::to_string(http_status);
-      data += (it->first + " - " + status + "\n");
+      data += (it->first + " - status code (response): " + status + " - " + std::to_string(request_count) + " request(s) received\n");
     }
   }
 

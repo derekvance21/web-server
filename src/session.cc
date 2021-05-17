@@ -80,9 +80,14 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
   // pass http::request into handle_request, called on our request_handler
   http::response<http::string_body> res = request_handler->handle_request(req);
   
-  // Get the http::status from res and save it as res_status
+  // Get the status code and url to be stored in status_ object
   int res_status = res.result_int();
-  status_->insert_request(loc, res_status);
+
+  std::ostringstream oss;
+  oss << req.target();
+  std::string url = oss.str();
+  
+  status_->insert_request(url, res_status);
   
   return res;
 }
