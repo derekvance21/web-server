@@ -32,3 +32,10 @@ http::response<http::string_body> NotFoundHandler::handle_request(const http::re
   return res;
     
 }
+
+/* Generates the path for the echo request requested */
+std::string NotFoundHandler::GetPath(const http::request<http::string_body>& request){
+  std::ostringstream path_stream;
+  path_stream << request.target();
+  return path_stream.str();
+}

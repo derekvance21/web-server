@@ -21,12 +21,12 @@ std::map<std::string, std::vector<std::string>> Status::get_request_handlers() {
   return request_handlers_;
 }
 
-// TODO: call this function in session.cc
+
 void Status::insert_request(std::string url, int response_code) {
   requests_[url].push_back(response_code);
 }
 
-// TODO: call this function 
+
 // potentially make a function in session.cc or server.cc called 
 // get_request_handlers or location_map_status which will interate over our 
 // loc_map_ and call this function insert_handler on every element of loc_map_

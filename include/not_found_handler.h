@@ -12,6 +12,7 @@ class NotFoundHandler : public RequestHandler
   public:
     NotFoundHandler(const std::string& location_path, const NginxConfig& config);
     http::response<http::string_body> handle_request(const http::request<http::string_body>& request);
+    std::string GetPath(const http::request<http::string_body>& request);
 };
 
 #endif

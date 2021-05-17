@@ -29,19 +29,20 @@ http::response<http::string_body> StatusHandler::handle_request(const http::requ
   // Note: if no requests the program will not enter the subsequent for loop
   if (requests.empty())
     data += "No requests received yet.\n";
-
-  // Loop through the map of urls -> list of status codes and display each of them
+  else
+    data += "| URL | - | Response Status Code | - | Number of requests |\n";
+  
+  // Loop through the map of urls/status -> number of requests and display each of them
   for (std::map<std::string, std::vector<int>>::iterator it = requests.begin(); it != requests.end(); ++it) {
     std::vector<int> status_vec = it->second;
     int request_count = status_vec.size();
 
     // Breakdown each request and its returned status code
-    for (int http_status : status_vec) {
-      std::string status = std::to_string(http_status);
-      data += (it->first + " - status code (response): " + status + " - " + std::to_string(request_count) + " request(s) received\n");
+    if (request_count > 0) {
+      std::string status = std::to_string(status_vec[0]);
+      data += (it->first + " - " + status + " - " + std::to_string(request_count) + " request(s) received\n");
     }
   }
-
   
   /* Part-2: Display Existing Handlers */
   data += "\nExisting Request Handlers and their Prefixes...\n\n";
