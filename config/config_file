@@ -4,7 +4,7 @@ location "/echo" EchoHandler {
 }
 
 location /static StaticHandler {
-  root ../tests/static_folder;  # supports relative path
+  root ./static_folder;  # supports relative path
 }
 
 location /uw ReverseProxyHandler {
