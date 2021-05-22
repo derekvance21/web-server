@@ -21,6 +21,7 @@
 #include "echo_handler.h"
 #include "static_handler.h"
 #include "status_handler.h"
+#include "health_handler.h"
 #include "reverse_proxy_handler.h"
 #include "not_found_handler.h"
 #include "logger.h"
@@ -105,6 +106,9 @@ RequestHandler* Session::createHandler(std::string location, std::string handler
   }
   if (handler == "ReverseProxyHandler") {
     return new ReverseProxyHandler(location, config_child);
+  }
+  if (handler == "HealthHandler") {
+    return new HealthHandler(location, config_child);
   }
 
   return new NotFoundHandler(location, config_child);
