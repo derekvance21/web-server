@@ -70,10 +70,11 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
     child_block = iter->second.second;
 
     // if req_path starts with loc - there's a match
-    if (req_path.find(loc) == 0) {
-      // we have found a match, so change request_handler to new location/type
-      request_handler = createHandler(loc, handler, child_block);
-      break;
+    int pos = req_path.find(loc);
+    if (pos != 0) {
+      // if loc wasn't at the start of req_path - not a match
+      handler = "NotFoundHandler";
+      continue;
     } 
   }
       
@@ -83,8 +84,16 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
   // Get the status code and url to be stored in status_ object
   int res_status = res.result_int();
 
-  std::string url = std::string(req.target());
+  std::ostringstream oss;
+  oss << req.target();
+  std::string url = oss.str();
+
+  // Formatted log string for metric extraction
+  std::ostringstream log_stream;
+  log_stream << "[RepsonseMetrics] CODE:" << std::to_string(res_status) << " PATH:" << req_path << " HANDLER:" << handler;
+  Logger::getInstance()->log_info(log_stream.str());
   
+  // Insert into request map for calls to /status
   status_->insert_request(url, res_status);
   
   return res;
