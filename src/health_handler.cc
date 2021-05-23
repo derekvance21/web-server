@@ -13,10 +13,9 @@ HealthHandler::HealthHandler(const std::string& location_path, const NginxConfig
 // TODO: create and return an http::response object instead of a string
 http::response<http::string_body> HealthHandler::handle_request(const http::request<http::string_body>& request)
 {
-  // Get version, body and data length from the request
+  // Get version from the request
   size_t version = request.version();
 
-  // Changed: instead of just body, echo back the whole request
   std::string body = "OK\n";
   size_t content_length = body.length();
   

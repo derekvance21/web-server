@@ -17,7 +17,6 @@ StaticHandler::StaticHandler(const std::string& location_path, const NginxConfig
 http::response<http::string_body> StaticHandler::handle_request(const http::request<http::string_body>& request)
 {
   std::string fullpath = GetPath(request);
-  std::cerr << "fullpath: " << fullpath << "\n";
   
   std::size_t dot = fullpath.find_last_of(".");
   std::string extension = "";
@@ -52,10 +51,8 @@ http::response<http::string_body> StaticHandler::handle_request(const http::requ
 
 /* Generates the path for the file requested */
 std::string StaticHandler::GetPath(const http::request<http::string_body>& request){
-  
-  std::ostringstream oss;
-  oss << request.target();
-  std::string uri_path = oss.str();
+
+  std::string uri_path = std::string(request.target());
   std::string req_path = "", full_path = "";
 
   // Check for whether the handler's location is specified in the uri path

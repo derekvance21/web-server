@@ -230,14 +230,6 @@ virtual http::response<http::string_body> handle_request(const http::request<htt
 `handle_request` is a virtual function that will be implemented in every class that extends `RequestHandler`. It takes a `boost::beast::http::request` object as a parameter that represents a request to the server and returns a `boost::beast::http::response` object that represents the server’s response.
 
 
-```
-std::string GetBody(const http::request<http::string_body>& request);
-```
-
-
-`GetBody` is a function that takes a `::beast::http::request` object as a parameter that represents the request to the server and returns the body of the request as a string.
-
-
 #### NotFoundHandler
 
 A NotFoundHandler is created when a static file is not found or when no other handler is reached. The class extends the abstract RequestHandler class and implements its handle_request function by returning a boost::beast::http::response object with a “Not Found” body.

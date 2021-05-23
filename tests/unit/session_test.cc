@@ -158,17 +158,34 @@ TEST_F(SessionFixtureTest, ErrorResponseSessionTest){
 
 TEST_F(SessionFixtureTest, RequestParsingTest){
 
-  // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr);
-  io_service.run();
+  Session my_session(io_service, nullptr);
 
   std::string req_str = "GET /echo HTTP/1.1\r\nHost: team\r\n\r\n";
   
-  http::request<http::string_body> req = my_session->FormatRequest(req_str);
+  http::request<http::string_body> req;
+  my_session.FormatRequest(req_str, req);
 
-  std::ostringstream oss;
-  oss << req.target();
-  std::string req_path = oss.str();
+  std::string req_path = std::string(req.target());
 
   EXPECT_TRUE(req_path == "/echo");
+}
+
+TEST_F(SessionFixtureTest, BadRequestFormatTest){
+
+  Session my_session(io_service, nullptr);
+
+  std::string req_str = "Invalid HTTP Request";
+  
+  http::request<http::string_body> req;
+
+  EXPECT_FALSE(my_session.FormatRequest(req_str, req));
+}
+
+TEST_F(SessionFixtureTest, BadRequestTest){
+
+  Session my_session(io_service, nullptr);
+
+  http::response<http::string_body> res = my_session.BadRequest();
+
+  EXPECT_TRUE(res.result_int() == 400);
 }

@@ -52,13 +52,15 @@ void Session::handle_read()
     // set up logging
 }
 
-http::response<http::string_body> Session::url_dispatcher(http::request<http::string_body> req, std::string req_path) {
+http::response<http::string_body> Session::url_dispatcher(http::request<http::string_body> req) {
+  // get the target path from request
+  std::string req_path = std::string(req.target());
   
   // Instantiate the request handler
   std::string loc = "", handler = "NotFoundHandler";
   NginxConfig child_block;
   RequestHandler* request_handler = createHandler(loc, handler, child_block);
-      
+
   // iterate over location map to make appropriate request handlers
   std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
   for(iter = loc_map_.rbegin(); iter != loc_map_.rend(); iter++) {
@@ -67,15 +69,11 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
     child_block = iter->second.second;
 
     // if req_path starts with loc - there's a match
-    int pos = req_path.find(loc);
-    if (pos != 0) {
-      // if loc wasn't at the start of req_path - not a match
-      continue;
+    if (req_path.find(loc) == 0) {
+      // we have found a match, so change request_handler to new location/type
+      request_handler = createHandler(loc, handler, child_block);
+      break;
     } 
-        
-    // we have found a match, so change request_handler to new location/type
-    request_handler = createHandler(loc, handler, child_block);
-    break;
   }
       
   // pass http::request into handle_request, called on our request_handler
@@ -84,9 +82,7 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
   // Get the status code and url to be stored in status_ object
   int res_status = res.result_int();
 
-  std::ostringstream oss;
-  oss << req.target();
-  std::string url = oss.str();
+  std::string url = std::string(req.target());
   
   status_->insert_request(url, res_status);
   
@@ -114,8 +110,9 @@ RequestHandler* Session::createHandler(std::string location, std::string handler
   return new NotFoundHandler(location, config_child);
 }
 
-/* Reformats from string request to http::request object */
-http::request<http::string_body> Session::FormatRequest(std::string req_string){
+/* Reformats from string request to http::request object
+  on invalid req_string, returns false. Otherwise, req_string parsed and result put into passed-by-reference req */
+bool Session::FormatRequest(std::string req_string, http::request<http::string_body>& req){
       
   // Use http::request_parser to parse our request and put it into an http::request
   http::request_parser<http::string_body> req_parser;
@@ -124,12 +121,13 @@ http::request<http::string_body> Session::FormatRequest(std::string req_string){
   boost::system::error_code ec;
   req_parser.put(boost::asio::buffer(req_string), ec);
       
-  if(ec)
+  if(ec) {
     std::cerr << "Request parsing error: " << ec.message() << std::endl;
+    return false;
+  }
 
-  http::request<http::string_body> req = req_parser.get();
-
-  return req;
+  req = req_parser.get();
+  return true;
 }
 
 /* Callback function: on read then format and send response back if successful */
@@ -141,16 +139,11 @@ int Session::send_response(const boost::system::error_code& error, size_t bytes_
       Logger::getInstance()->log_data_read(req_string);
       memset(data_, 0, 1024);
 
-      http::request<http::string_body> req = FormatRequest(req_string);
-      
-      // Get target (path) and convert to string
-      std::ostringstream oss;
-      oss << req.target();
-      std::string req_path = oss.str();
+      http::request<http::string_body> req;
+      bool valid_request = FormatRequest(req_string, req);
 
-       // call url_dispatcher 
-      http::response<http::string_body> res = url_dispatcher(req, req_path);
-      
+      http::response<http::string_body> res = valid_request ? url_dispatcher(req) : BadRequest();
+
       std::ostringstream response_stream;
       response_stream << res;
       std::string response_string = response_stream.str();
@@ -200,3 +193,14 @@ int Session::loopback_read(const boost::system::error_code& error, size_t bytes_
     }
 }
 
+http::response<http::string_body> Session::BadRequest() {
+  std::string body = "Bad HTTP request given\n";
+  http::response<http::string_body> res;
+
+  res.result(http::status::bad_request);
+  res.set(http::field::content_type, "text/plain");
+  res.set(http::field::content_length, body.length());
+  res.body() = body;
+
+  return res;
+}

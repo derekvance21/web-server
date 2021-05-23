@@ -31,9 +31,11 @@ public:
           Status* status,
           bool test_flag = false,
           const loc_map_type& loc_map = loc_map_type());
+  // on invalid req_string, returns false. Otherwise, req_string parsed and result put into passed-by-reference req
+  bool FormatRequest(std::string req_string, http::request<http::string_body>& req);
   RequestHandler* createHandler(std::string location, std::string handler, NginxConfig config_child);
-  http::request<http::string_body> FormatRequest(std::string req_string);
-  http::response<http::string_body> url_dispatcher(http::request<http::string_body> req, std::string req_path);
+  http::response<http::string_body> url_dispatcher(http::request<http::string_body> req);
+  http::response<http::string_body> BadRequest();
   int send_response(const boost::system::error_code& error, size_t bytes_transferred);
   int loopback_read(const boost::system::error_code& error, size_t bytes_transferred);
   void handle_read();

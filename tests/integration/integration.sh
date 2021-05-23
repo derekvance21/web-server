@@ -4,39 +4,39 @@ PWD=`pwd`
 PORT=8080
 REGRESSION_FOLDER="regressions"
 CONFIG_FILE="config"
+OUTPUT=`mktemp`
+PROXY_OUTPUT=`mktemp`
+
+set -e
 
 function cleanup() {
-  rm -f tmp.out
-  rm -f regression_proxy.out
   kill $! > /dev/null 2>&1
 }
+
+trap cleanup EXIT
 
 function test() {
   req=$1
   regression=$2
-  rm -f tmp.out
-  curl -sSi -m 2 -o tmp.out "http://localhost:${PORT}${req}"
-  diff -w tmp.out "$REGRESSION_FOLDER/$regression"
-  if [[ $? -ne 0 ]]; then
-    echo "failed $req"
-    cleanup
-    exit 1
-  fi
+  echo "Testing $req ..."
+  curl -sSi -m 2 -o $OUTPUT "http://localhost:${PORT}${req}"
+  diff -w $OUTPUT "$REGRESSION_FOLDER/$regression"
 }
 
 function test_proxy() {
+  echo "Testing proxy $req ..."
   req=$1
   proxy_dest=$2
-  rm -f regression_proxy.out
-  rm -f tmp.out
-  curl -sS -m 2 -o regression_proxy.out $proxy_dest
-  curl -sS -m 2 -o tmp.out "http://localhost:${PORT}${req}"
-  diff -w tmp.out regression_proxy.out
-  if [[ $? -ne 0 ]]; then
-    echo "failed $req"
-    cleanup
-    exit 1
-  fi
+  curl -sS -m 2 -o $PROXY_OUTPUT $proxy_dest
+  curl -sS -m 2 -o $OUTPUT "http://localhost:${PORT}${req}"
+  diff -w $OUTPUT $PROXY_OUTPUT
+}
+
+function test_bad_request() {
+  echo "Testing bad request ..."
+  echo "Invalid HTTP Request" | nc -q 1 localhost 8080 > badreq.out
+  sleep 1
+  diff -w badreq.out "$REGRESSION_FOLDER/regression_400.out"
 }
 
 if [[ ! $PWD =~ $DIR$ ]]; then
@@ -44,12 +44,9 @@ if [[ ! $PWD =~ $DIR$ ]]; then
   exit 1
 fi
 
-../../build/bin/webserver $CONFIG_FILE &
-EXIT=$?
-if [[ $EXIT -ne 0 ]]; then
-  echo "Failed to start webserver; exit code: ${$?}"
-  exit $EXIT
-fi
+echo "Starting webserver ..."
+../../build/bin/webserver $CONFIG_FILE & >/dev/null
+
 sleep 0.5 # wait a bit before starting tests to avoid race conditions
 
 test "/echo" regression_echo.out
@@ -60,6 +57,8 @@ test "/testing/folder/example_config/config_locations" regression_static2.out
 
 test_proxy "/vaxx/text.txt" "http://34.105.8.173/static/text.txt"
 test_proxy "/uw" "http://www.washington.edu"
+
+test_bad_request
 
 cleanup
 echo "All tests passed!"
