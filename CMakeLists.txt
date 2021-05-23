@@ -9,6 +9,7 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     You may need to remove CMakeCache.txt." )
 endif()
 
+
 # Turn on debug builds if we are building in a devel shell
 if (CMAKE_BUILD_TYPE STREQUAL "" AND "$ENV{DEVEL_SHELL}" STREQUAL "1")
     message(STATUS "Setting debug build type by default in devel shell")
@@ -38,9 +39,10 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
 add_library(status_lib src/status.cc)
-add_library(session_lib src/session.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/status.cc src/status_handler.cc src/reverse_proxy_handler.cc src/http_client.cc src/health_handler.cc)
+add_library(session_lib src/session.cc src/blocking_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/status.cc src/status_handler.cc src/reverse_proxy_handler.cc src/http_client.cc src/health_handler.cc)
 add_library(echo_lib src/echo_handler.cc)
 add_library(not_found_lib src/not_found_handler.cc)
+add_library(blocking_lib src/blocking_handler.cc)
 add_library(logger_lib src/logger.cc)
 add_library(static_lib src/not_found_handler.cc src/static_handler.cc)
 add_library(status_handler_lib src/status.cc src/status_handler.cc)
@@ -51,7 +53,7 @@ add_library(http_client_lib src/http_client.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     
-target_link_libraries(webserver pthread server_lib session_lib static_lib echo_lib status_lib status_handler_lib config_parser_lib logger_lib reverse_proxy_lib http_client_lib
+target_link_libraries(webserver pthread server_lib session_lib blocking_lib static_lib echo_lib status_lib status_handler_lib config_parser_lib logger_lib reverse_proxy_lib http_client_lib
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps

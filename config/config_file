@@ -1,4 +1,4 @@
-port 80; # The port my server listens on
+port 8080; # The port my server listens on
 
 location "/echo" EchoHandler {
 }
@@ -20,4 +20,7 @@ location /status StatusHandler {
 }
 
 location /health HealthHandler {
+}
+
+location /sleep BlockingHandler {
 }

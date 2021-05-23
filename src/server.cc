@@ -12,6 +12,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <thread>
 #include "server.h"
 #include "session.h"
 #include "config_parser.h"
@@ -56,20 +57,20 @@ int Server::record_handlers()
 
 int Server::start_accept()
 {
-  Session* new_session = new Session(io_service_, status_, false, loc_map_);
-  acceptor_.async_accept(new_session->socket_,
-			 boost::bind(&Server::handle_accept, this, new_session,
+  Session* session = new Session(io_service_, status_, false, loc_map_);
+  acceptor_.async_accept(session->socket_,
+			 boost::bind(&Server::handle_accept, this, session,
 				     boost::asio::placeholders::error));
   return 0;
 }
 
-int Server::handle_accept(Session* new_session, const boost::system::error_code& error)
+int Server::handle_accept(Session* session, const boost::system::error_code& error)
 {
   if (!error) {
-    new_session->start();
+    session->start();
   }
   else {
-    delete new_session;
+    delete session;
     return -1;
   }
 

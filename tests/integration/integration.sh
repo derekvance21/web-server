@@ -39,6 +39,12 @@ function test_bad_request() {
   diff -w badreq.out "$REGRESSION_FOLDER/regression_400.out"
 }
 
+function test_multi() {
+  req=$1
+  rm -f tmp.out
+  curl -sSi -m 20 "http://localhost:${PORT}${req}"
+}
+
 if [[ ! $PWD =~ $DIR$ ]]; then
   echo "wrong directory: must run integration.sh from tests/integration"
   exit 1
@@ -59,6 +65,22 @@ test_proxy "/vaxx/text.txt" "http://34.105.8.173/static/text.txt"
 test_proxy "/uw" "http://www.washington.edu"
 
 test_bad_request
+
+# -- Testing Multithreading
+# By calling /sleep handler which sleeps for 15sec
+# and calling /echo at the same time and time it
+test_multi "/sleep"
+
+starttime=`date +%s.%N`
+test "/echo" regression_echo.out
+endtime=`date +%s.%N`
+
+runtime=$((endtime-starttime))
+
+if [ $(date -d "$runtime" "+%s") >= 4 ]; then
+    echo "Failed multithreading; time exceeded"
+    exit $EXIT
+fi
 
 cleanup
 echo "All tests passed!"
