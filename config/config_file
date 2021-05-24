@@ -1,4 +1,4 @@
-port 8080; # The port my server listens on
+port 80; # The port my server listens on
 
 location "/echo" EchoHandler {
 }
