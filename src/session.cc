@@ -61,6 +61,7 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
   std::string loc = "", handler = "NotFoundHandler";
   NginxConfig child_block;
   RequestHandler* request_handler = createHandler(loc, handler, child_block);
+  bool match_found = false;
 
   // iterate over location map to make appropriate request handlers
   std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter;
@@ -73,6 +74,7 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
     if (req_path.find(loc) == 0) {
       // we have found a match, so change request_handler to new location/type
       request_handler = createHandler(loc, handler, child_block);
+      match_found = true;
       break;
     } 
   }
@@ -84,6 +86,14 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
   int res_status = res.result_int();
 
   std::string url = std::string(req.target());
+
+  // Formatted log string for metric extraction
+  if(!match_found){
+    handler = "NotFoundHandler";
+  }
+  std::ostringstream log_stream;
+  log_stream << "[RepsonseMetrics] CODE:" << std::to_string(res_status) << " PATH:" << req_path << " HANDLER:" << handler;
+  Logger::getInstance()->log_info(log_stream.str());
   
   status_->insert_request(url, res_status);
   
