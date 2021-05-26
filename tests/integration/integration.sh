@@ -10,7 +10,8 @@ PROXY_OUTPUT=`mktemp`
 set -e
 
 function cleanup() {
-  kill $! > /dev/null 2>&1
+  kill $server > /dev/null 2>&1
+  rm -f $OUTPUT $PROXY_OUTPUT
 }
 
 trap cleanup EXIT
@@ -34,15 +35,9 @@ function test_proxy() {
 
 function test_bad_request() {
   echo "Testing bad request ..."
-  echo "Invalid HTTP Request" | nc -q 1 localhost 8080 > badreq.out
+  echo "Invalid HTTP Request" | nc -q 1 localhost 8080 > $OUTPUT
   sleep 1
-  diff -w badreq.out "$REGRESSION_FOLDER/regression_400.out"
-}
-
-function test_multi() {
-  req=$1
-  rm -f tmp.out
-  curl -sSi -m 20 "http://localhost:${PORT}${req}"
+  diff -w $OUTPUT "$REGRESSION_FOLDER/regression_400.out"
 }
 
 if [[ ! $PWD =~ $DIR$ ]]; then
@@ -51,7 +46,8 @@ if [[ ! $PWD =~ $DIR$ ]]; then
 fi
 
 echo "Starting webserver ..."
-../../build/bin/webserver $CONFIG_FILE & >/dev/null
+../../build/bin/webserver $CONFIG_FILE > /dev/null 2>&1 &
+server=$!
 
 sleep 0.5 # wait a bit before starting tests to avoid race conditions
 
@@ -67,21 +63,23 @@ test_proxy "/uw" "http://www.washington.edu"
 test_bad_request
 
 # -- Testing Multithreading
-# By calling /sleep handler which sleeps for 15sec
+echo "Testing multithreading"
+# By calling /sleep handler in the background which sleeps for 15sec
 # and calling /echo at the same time and time it
-test_multi "/sleep"
+curl -sSi -m 16 "http://localhost:${PORT}/sleep" > /dev/null 2>&1 & 
+starttime=`date +%s`
 
-starttime=`date +%s.%N`
 test "/echo" regression_echo.out
-endtime=`date +%s.%N`
+endtime=`date +%s`
 
-runtime=$((endtime-starttime))
+# bash arithmetic has to be integers - it won't handle decimal places
+runtime=$(( endtime - starttime ))
 
-if [ $(date -d "$runtime" "+%s") >= 4 ]; then
+# since conditional is arithmetic, inside double parentheses
+if (( runtime >= 15 )); then
     echo "Failed multithreading; time exceeded"
-    exit $EXIT
+    exit 1
 fi
 
-cleanup
 echo "All tests passed!"
 exit 0
