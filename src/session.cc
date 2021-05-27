@@ -25,6 +25,7 @@
 #include "blocking_handler.h"
 #include "reverse_proxy_handler.h"
 #include "not_found_handler.h"
+#include "login_handler.h"
 #include "logger.h"
 #include "config_parser.h"
 
@@ -119,6 +120,9 @@ RequestHandler* Session::createHandler(std::string location, std::string handler
   }
   if (handler == "BlockingHandler") {
     return new BlockingHandler(location, config_child);
+  }
+  if(handler == "LoginHandler") {
+    return new LoginHandler(location, config_child);
   }
 
   return new NotFoundHandler(location, config_child);

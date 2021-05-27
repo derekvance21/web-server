@@ -39,7 +39,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_library(config_parser_lib src/config_parser.cc)
 add_library(server_lib src/server.cc)
 add_library(status_lib src/status.cc)
-add_library(session_lib src/session.cc src/blocking_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/status.cc src/status_handler.cc src/reverse_proxy_handler.cc src/http_client.cc src/health_handler.cc)
+add_library(session_lib src/session.cc src/blocking_handler.cc src/echo_handler.cc src/not_found_handler.cc src/static_handler.cc src/status.cc src/status_handler.cc src/reverse_proxy_handler.cc src/http_client.cc src/health_handler.cc src/login_handler.cc)
 add_library(echo_lib src/echo_handler.cc)
 add_library(not_found_lib src/not_found_handler.cc)
 add_library(blocking_lib src/blocking_handler.cc)
@@ -48,12 +48,13 @@ add_library(static_lib src/not_found_handler.cc src/static_handler.cc)
 add_library(status_handler_lib src/status.cc src/status_handler.cc)
 add_library(health_handler_lib src/health_handler.cc)
 add_library(reverse_proxy_lib src/reverse_proxy_handler.cc src/http_client.cc)
+add_library(login_lib src/login_handler.cc)
 add_library(http_client_lib src/http_client.cc)
 
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(webserver src/_main.cc)     
-target_link_libraries(webserver pthread server_lib session_lib blocking_lib static_lib echo_lib status_lib status_handler_lib config_parser_lib logger_lib reverse_proxy_lib http_client_lib
+target_link_libraries(webserver pthread server_lib session_lib blocking_lib static_lib echo_lib status_lib status_handler_lib config_parser_lib logger_lib reverse_proxy_lib login_lib http_client_lib
                             Boost::system Boost::log_setup Boost::log Boost::filesystem Boost::regex)
 
 # TODO(!): Update test executable name, srcs, and deps
@@ -92,6 +93,9 @@ target_link_libraries(status_handler_test status_handler_lib gtest_main config_p
 add_executable(health_handler_test tests/unit/health_handler_test.cc)
 target_link_libraries(health_handler_test health_handler_lib gtest_main)
 
+add_executable(login_handler_test tests/unit/login_handler_test.cc)
+target_link_libraries(login_handler_test login_lib not_found_lib gtest_main)
+
 # TODO(!): Update with test binary
 gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -102,6 +106,7 @@ gtest_discover_tests(static_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 gtest_discover_tests(reverse_proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(status_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(health_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(login_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 add_test(NAME IntegrationTest 
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration/integration.sh 
