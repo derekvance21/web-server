@@ -33,7 +33,7 @@ TEST_F(LoginHandlerTest, StatusCodeResponseTest)
   http::response<http::string_body> res = req_handler.handle_request(req);
 
   // Both Should Be Equal
-  EXPECT_FALSE(res.result_int() == 200);
+  EXPECT_TRUE(res.result_int() == 401);
 
   req.body() = "password=juzang-password";
   res = req_handler.handle_request(req);
