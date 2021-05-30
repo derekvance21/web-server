@@ -1,15 +1,18 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <algorithm>
+#include <deque>
 #include "request_handler.h"
 #include "login_handler.h"
 #include "not_found_handler.h"
 #include <boost/beast/http.hpp>
 
 namespace http = boost::beast::http;
+int MAX_NUM_COOKIES = 15;
 
-LoginHandler::LoginHandler(const std::string& location_path, const NginxConfig& config)
-  : RequestHandler(location_path, config)
+LoginHandler::LoginHandler(const std::string& location_path, const NginxConfig& config, std::deque<std::string>& cookies)
+  : RequestHandler(location_path, config), cookies_(cookies)
 {}
 
 http::response<http::string_body> LoginHandler::handle_request(const http::request<http::string_body>& request)
@@ -42,8 +45,14 @@ http::response<http::string_body> LoginHandler::handle_post_request(const http::
     std::string password = body.substr(body.find("password=")+9);
     
     if(password == "juzang-password") {
-        // TODO: if password is correct, generate and set cookie before returning ok response
-        
+        // Generate and set cookie
+        std::string cookie = generate_cookie();
+        if(set_cookie(cookie)){
+          res.set(http::field::set_cookie, cookie);
+        } 
+
+        // TODO: here is probably where we would do the redirection
+        // Set rest of fields
         res_body = "Authentication Successful";
         content_length = std::to_string(res_body.length());
         res.result(http::status::ok);
@@ -117,3 +126,26 @@ int LoginHandler::ReadFile(std::string fullpath, std::string& file_content) {
   return 0;
 }
 
+std::string LoginHandler::generate_cookie() // used https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
+{
+    auto randchar = []() -> char
+    {
+        const char charset[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
+        const size_t max_index = (sizeof(charset) - 1);
+        return charset[ rand() % max_index ];
+    };
+    std::string str(15,0);
+    std::generate_n( str.begin(), 15, randchar );
+    return str;
+}
+
+bool LoginHandler::set_cookie(std::string cookie){
+  if(cookies_.size() >= MAX_NUM_COOKIES){
+    cookies_.pop_front();
+  }
+  cookies_.push_back(cookie);
+  return true;
+}

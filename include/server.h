@@ -16,6 +16,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <map>
+#include <deque>
 #include "session.h"
 #include "status.h"
 
@@ -39,6 +40,7 @@ private:
   tcp::acceptor acceptor_;
   Status* status_;
   bool test_flag;
+  std::deque<std::string> cookies_;
 };
 
 #endif

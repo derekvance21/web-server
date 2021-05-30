@@ -13,6 +13,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <thread>
+#include <deque>
 #include "server.h"
 #include "session.h"
 #include "config_parser.h"
@@ -30,7 +31,6 @@ Server::Server(boost::asio::io_service& io_service, NginxConfig& config, bool te
   loc_map_ = config.GetLocationMap();
   status_ = new Status(loc_map_);
   record_handlers();
-
 }
 
 /* Helper: records the handlers from location map into the status object */
@@ -57,7 +57,7 @@ int Server::record_handlers()
 
 int Server::start_accept()
 {
-  Session* session = new Session(io_service_, status_, false, loc_map_);
+  Session* session = new Session(io_service_, status_, cookies_, false, loc_map_);
   acceptor_.async_accept(session->socket_,
 			 boost::bind(&Server::handle_accept, this, session,
 				     boost::asio::placeholders::error));

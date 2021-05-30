@@ -16,6 +16,8 @@
 #include <map>
 #include <boost/beast/http.hpp>
 #include <boost/beast/core.hpp>
+#include <deque>
+#include <string>
 #include "session.h"
 #include "request_handler.h"
 #include "echo_handler.h"
@@ -34,8 +36,8 @@ namespace http = boost::beast::http;
 using boost::asio::ip::tcp;
 
 
-Session::Session(boost::asio::io_service& io_service, Status* status, bool test_flag, const loc_map_type& loc_map )
-  : socket_(io_service), test_flag(test_flag), loc_map_(loc_map), status_(status) {}
+Session::Session(boost::asio::io_service& io_service, Status* status, std::deque<std::string>& cookies, bool test_flag, const loc_map_type& loc_map)
+  : socket_(io_service), cookies_(cookies), test_flag(test_flag), loc_map_(loc_map), status_(status) {}
 
 
 /* Main function: starts off the reading from client */
@@ -73,6 +75,21 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
 
     // if req_path starts with loc - there's a match
     if (req_path.find(loc) == 0) {
+
+      // look for cookie in cookie queue
+      std::string current_cookie = std::string{req[http::field::cookie]};
+      if(!validate_cookie(current_cookie) || current_cookie.empty()){
+        // Reformat inputs for create handler
+        loc = "/login";
+        handler = "LoginHandler";
+
+        // Add headers to request for redirection
+        // TODO: use these to format response into a new redirected request
+        req.set("orig-target", req.target());
+        req.set("orig-body", req.body());
+        req.set("orig-version", req.version());
+      }
+
       // we have found a match, so change request_handler to new location/type
       request_handler = createHandler(loc, handler, child_block);
       match_found = true;
@@ -122,7 +139,7 @@ RequestHandler* Session::createHandler(std::string location, std::string handler
     return new BlockingHandler(location, config_child);
   }
   if(handler == "LoginHandler") {
-    return new LoginHandler(location, config_child);
+    return new LoginHandler(location, config_child, cookies_);
   }
 
   return new NotFoundHandler(location, config_child);
@@ -221,4 +238,20 @@ http::response<http::string_body> Session::BadRequest() {
   res.body() = body;
 
   return res;
+}
+
+bool Session::validate_cookie(std::string client_cookie) {
+  int found_index = 0;
+  for(auto param : cookies_){
+    std::size_t found = client_cookie.find(param);
+    if(found != std::string::npos){
+      // Erase the cookie and move it to the back to re-prioritize it
+      std::string temp_cookie = param;
+      cookies_.erase(cookies_.begin() + found_index);
+      cookies_.push_back(temp_cookie);
+      return true;
+    }
+    found_index++;
+  }
+  return false;
 }

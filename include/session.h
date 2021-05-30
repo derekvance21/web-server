@@ -15,6 +15,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include <map>
+#include <deque>
 #include "request_handler.h"
 #include "config_parser.h"
 #include "status.h"
@@ -29,6 +30,7 @@ public:
 
   Session(boost::asio::io_service& io_service, 
           Status* status,
+          std::deque<std::string>& cookies,
           bool test_flag = false,
           const loc_map_type& loc_map = loc_map_type());
   // on invalid req_string, returns false. Otherwise, req_string parsed and result put into passed-by-reference req
@@ -41,6 +43,7 @@ public:
   void handle_read();
   void handle_write(std::string response_msg, std::string type);
   void start();
+  bool validate_cookie(std::string client_cookie);
 
   tcp::socket socket_;
 
@@ -51,6 +54,7 @@ private:
   bool test_flag;
   enum { max_length = 1024 };
   char data_[max_length];
+  std::deque<std::string>& cookies_;
 };
 
 #endif
