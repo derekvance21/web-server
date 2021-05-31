@@ -191,3 +191,25 @@ TEST_F(SessionFixtureTest, BadRequestTest){
 
   EXPECT_TRUE(res.result_int() == 400);
 }
+
+TEST_F(SessionFixtureTest, EmptyCookieValidationTest){
+
+  Session my_session(io_service, nullptr, cookies);
+
+  bool is_valid = my_session.validate_cookie("cookie-dough");
+
+  EXPECT_TRUE(is_valid == false);
+}
+
+TEST_F(SessionFixtureTest, ValidCookieValidationTest){
+
+  cookies.push_back("my-cookie");
+  cookies.push_back("first-cookie");
+  cookies.push_back("useless-cookie");
+  
+  Session my_session(io_service, nullptr, cookies);
+
+  bool is_valid = my_session.validate_cookie("first-cookie");
+
+  EXPECT_TRUE(is_valid == true);
+}
