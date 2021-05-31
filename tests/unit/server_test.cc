@@ -18,6 +18,7 @@ class ServerGeneratorTest : public ::testing::Test {
     }
     boost::asio::io_service io_service;
     NginxConfig config; 
+    std::deque<std::string> cookies;
 };
 
 
@@ -37,7 +38,7 @@ TEST_F(ServerGeneratorTest, HandleAcceptErrorTest)
 {
   Server s(io_service, config, true);
   Status* my_status = s.get_status();
-  Session* my_session = new Session(io_service, my_status);
+  Session* my_session = new Session(io_service, my_status, cookies);
   
   int error_code = s.handle_accept(my_session, make_error_code(boost::system::errc::not_connected));
   EXPECT_TRUE(error_code == -1);
@@ -48,7 +49,7 @@ TEST_F(ServerGeneratorTest, HandleAcceptSuccessTest)
 {
   Server s(io_service, config, true);
   Status* my_status = s.get_status();
-  Session* my_session = new Session(io_service, my_status);
+  Session* my_session = new Session(io_service, my_status, cookies);
 
   io_service.run();
   

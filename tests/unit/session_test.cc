@@ -5,6 +5,7 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/core.hpp>
 #include <sstream>
+#include <deque>
 
 
 namespace http = boost::beast::http;
@@ -14,6 +15,7 @@ class SessionFixtureTest : public ::testing::Test {
     boost::asio::io_service io_service;
     NginxConfigParser parser;
     NginxConfig out_config;
+    std::deque<std::string> cookies;
 };
 
 
@@ -29,7 +31,7 @@ TEST_F(SessionFixtureTest, BasicSessionTest){
   Status* status = new Status(loc_map);
   
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, status, false, loc_map);
+  Session* my_session = new Session(io_service, status, cookies, false, loc_map);
   io_service.run();
 
   // Data to be tested
@@ -58,7 +60,7 @@ TEST_F(SessionFixtureTest, EmptyMessageSessionTest){
   Status* status = new Status(loc_map);
   
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, status, false, loc_map);
+  Session* my_session = new Session(io_service, status, cookies, false, loc_map);
   io_service.run();
 
   // Data to be tested
@@ -85,7 +87,7 @@ TEST_F(SessionFixtureTest, MoreThanMaxMessageSessionTest){
   Status* status = new Status(loc_map);
   
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, status, false, loc_map);
+  Session* my_session = new Session(io_service, status, cookies, false, loc_map);
   io_service.run();
 
   // Data to be tested (more than 1024)
@@ -108,7 +110,7 @@ TEST_F(SessionFixtureTest, MoreThanMaxMessageSessionTest){
 TEST_F(SessionFixtureTest, ErrorLoopBackSessionTest){
 
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr, true);
+  Session* my_session = new Session(io_service, nullptr, cookies, true);
   io_service.run();
 
 
@@ -122,7 +124,7 @@ TEST_F(SessionFixtureTest, ErrorLoopBackSessionTest){
 TEST_F(SessionFixtureTest, SuccessLoopBackSessionTest){
 
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr, true);
+  Session* my_session = new Session(io_service, nullptr, cookies, true);
   io_service.run();
 
 
@@ -136,7 +138,7 @@ TEST_F(SessionFixtureTest, SuccessLoopBackSessionTest){
 TEST_F(SessionFixtureTest, ErrorResponseSessionTest){
 
   // Set up new session and run io_service
-  Session* my_session = new Session(io_service, nullptr);
+  Session* my_session = new Session(io_service, nullptr, cookies);
   io_service.run();
 
   // Data to be tested (more than 1024)
@@ -158,7 +160,7 @@ TEST_F(SessionFixtureTest, ErrorResponseSessionTest){
 
 TEST_F(SessionFixtureTest, RequestParsingTest){
 
-  Session my_session(io_service, nullptr);
+  Session my_session(io_service, nullptr, cookies);
 
   std::string req_str = "GET /echo HTTP/1.1\r\nHost: team\r\n\r\n";
   
@@ -172,7 +174,7 @@ TEST_F(SessionFixtureTest, RequestParsingTest){
 
 TEST_F(SessionFixtureTest, BadRequestFormatTest){
 
-  Session my_session(io_service, nullptr);
+  Session my_session(io_service, nullptr, cookies);
 
   std::string req_str = "Invalid HTTP Request";
   
@@ -183,7 +185,7 @@ TEST_F(SessionFixtureTest, BadRequestFormatTest){
 
 TEST_F(SessionFixtureTest, BadRequestTest){
 
-  Session my_session(io_service, nullptr);
+  Session my_session(io_service, nullptr, cookies);
 
   http::response<http::string_body> res = my_session.BadRequest();
 

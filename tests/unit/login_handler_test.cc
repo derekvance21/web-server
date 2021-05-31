@@ -12,6 +12,7 @@ class LoginHandlerTest : public ::testing::Test {
   protected:
     NginxConfigParser parser;
     NginxConfig out_config;
+    std::deque<std::string> cookies;
 };
 
 
@@ -23,7 +24,7 @@ TEST_F(LoginHandlerTest, StatusCodeResponseTest)
 {
   // Set-Up Response Message To Be Sent
   std::string temp = "/login";
-  LoginHandler req_handler(temp, out_config);
+  LoginHandler req_handler(temp, out_config, cookies);
 
   http::request<http::string_body> req;
   req.method(http::verb::post);
