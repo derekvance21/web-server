@@ -78,7 +78,7 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
 
       // look for cookie in cookie queue
       std::string current_cookie = std::string{req[http::field::cookie]};
-      if(!validate_cookie(current_cookie) || current_cookie.empty()){
+      if(current_cookie.empty() || !validate_cookie(current_cookie)){
         // Reformat inputs for create handler
         loc = "/login";
         handler = "LoginHandler";

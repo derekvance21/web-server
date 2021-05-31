@@ -48,12 +48,12 @@ http::response<http::string_body> LoginHandler::handle_post_request(const http::
         // Generate and set cookie
         std::string cookie = generate_cookie();
         if(set_cookie(cookie)){
-          res.set(http::field::set_cookie, cookie);
+          res.set(http::field::set_cookie, "session_id=" + cookie);
         } 
 
         // TODO: here is probably where we would do the redirection
         // Set rest of fields
-        res_body = "Authentication Successful";
+        res_body = "Authentication Successful\n";
         content_length = std::to_string(res_body.length());
         res.result(http::status::ok);
         res.set(http::field::content_type, "text/html");
@@ -63,7 +63,7 @@ http::response<http::string_body> LoginHandler::handle_post_request(const http::
     }
 
     // if the cookie is incorrect, return an unauthorized response
-    res_body = "Authentication Denied";
+    res_body = "Authentication Denied\n";
     content_length = std::to_string(res_body.length());
     res.result(http::status::unauthorized);
     res.set(http::field::content_type, "text/html");

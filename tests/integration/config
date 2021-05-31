@@ -19,3 +19,5 @@ location /vaxx ReverseProxyHandler {
 }
 location /sleep BlockingHandler {
 }
+location /login LoginHandler {
+}
