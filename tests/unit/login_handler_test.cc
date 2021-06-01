@@ -119,3 +119,35 @@ TEST_F(LoginHandlerTest, StatusCodeGetStaticRequestTest)
   // Server will not respond to unauthenticated /echo request
   EXPECT_TRUE(osresponse_gotten.str() != response_expect);
 }
+
+
+TEST_F(LoginHandlerTest, MaxCookieReachedTest)
+{
+  // Instantiate the request handler (Login Handler)
+  std::string temp = "/login";
+  LoginHandler req_handler(temp, out_config, cookies);
+
+  bool is_valid = false;
+  
+  // Fill in the queue with cookies until max number
+  for (int i = 0; i < 15; i++){
+    std::string cookie = "dummy-cookie-" + std::to_string(i+1);
+    is_valid = req_handler.set_cookie(cookie);
+  }
+
+  // add in one past the limit
+  is_valid = req_handler.set_cookie("real-cookie");
+
+  // Get the cookies stored and check the front and back cookies
+  auto handler_cookies = req_handler.get_cookies();
+  std::string front = handler_cookies.front();
+  std::string back = handler_cookies.back();
+
+  std::cerr << front << " " << back << std::endl; 
+
+  EXPECT_TRUE(front == "dummy-cookie-2");
+  EXPECT_TRUE(back == "real-cookie");
+
+  // Server will not respond to unauthenticated /echo request
+  EXPECT_TRUE(is_valid == true);
+}

@@ -19,6 +19,8 @@ class LoginHandler : public RequestHandler
     int ReadFile(std::string fullpath, std::string& file_content);
     std::string generate_cookie();
     bool set_cookie(std::string cookie);
+    std::deque<std::string> get_cookies();
+  
   private:
     std::deque<std::string>& cookies_;
 };

@@ -142,10 +142,16 @@ std::string LoginHandler::generate_cookie() // used https://stackoverflow.com/qu
     return str;
 }
 
-bool LoginHandler::set_cookie(std::string cookie){
+bool LoginHandler::set_cookie(std::string cookie)
+{
   if(cookies_.size() >= MAX_NUM_COOKIES){
     cookies_.pop_front();
   }
   cookies_.push_back(cookie);
   return true;
+}
+
+std::deque<std::string> LoginHandler::get_cookies()
+{
+  return cookies_;
 }
