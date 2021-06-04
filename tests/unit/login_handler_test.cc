@@ -22,9 +22,13 @@ class LoginHandlerTest : public ::testing::Test {
 
 TEST_F(LoginHandlerTest, StatusCodeLoginResponseTest)
 {
+  // create redirect response
+  http::response<http::string_body> redirect_res;
+  redirect_res.result(http::status::ok);
+  redirect_res.set(http::field::content_type, "html/text");
   // Instantiate the request handler (Login Handler)
   std::string temp = "/login";
-  LoginHandler req_handler(temp, out_config, cookies);
+  LoginHandler req_handler(temp, out_config, cookies, redirect_res);
 
   // Set the body with the correct password
   http::request<http::string_body> req;
@@ -40,9 +44,13 @@ TEST_F(LoginHandlerTest, StatusCodeLoginResponseTest)
 
 TEST_F(LoginHandlerTest, StatusCodeDeniedResponseTest)
 {
+  // create redirect response
+  http::response<http::string_body> redirect_res;
+  redirect_res.result(http::status::ok);
+  redirect_res.set(http::field::content_type, "html/text");
   // Instantiate the request handler (Login Handler)
   std::string temp = "/login";
-  LoginHandler req_handler(temp, out_config, cookies);
+  LoginHandler req_handler(temp, out_config, cookies, redirect_res);
 
   // Set the body with an incorrect password
   http::request<http::string_body> req;
@@ -58,9 +66,13 @@ TEST_F(LoginHandlerTest, StatusCodeDeniedResponseTest)
 
 TEST_F(LoginHandlerTest, StatusCodeGetEchoRequestTest)
 {
+  // create redirect response
+  http::response<http::string_body> redirect_res;
+  redirect_res.result(http::status::ok);
+  redirect_res.set(http::field::content_type, "text/plain");
   // Instantiate the request handler (Login Handler)
   std::string temp = "/login";
-  LoginHandler req_handler(temp, out_config, cookies);
+  LoginHandler req_handler(temp, out_config, cookies, redirect_res);
 
   // Send an echo get request 
   http::request<http::string_body> req;
@@ -90,9 +102,13 @@ TEST_F(LoginHandlerTest, StatusCodeGetEchoRequestTest)
 
 TEST_F(LoginHandlerTest, StatusCodeGetStaticRequestTest)
 {
+  // create redirect response
+  http::response<http::string_body> redirect_res;
+  redirect_res.result(http::status::ok);
+  redirect_res.set(http::field::content_type, "html/text");
   // Instantiate the request handler (Login Handler)
   std::string temp = "/login";
-  LoginHandler req_handler(temp, out_config, cookies);
+  LoginHandler req_handler(temp, out_config, cookies, redirect_res);
 
   // Send an echo get request 
   http::request<http::string_body> req;
@@ -123,9 +139,13 @@ TEST_F(LoginHandlerTest, StatusCodeGetStaticRequestTest)
 
 TEST_F(LoginHandlerTest, MaxCookieReachedTest)
 {
+  // create redirect reponse
+  http::response<http::string_body> redirect_res;
+  redirect_res.result(http::status::ok);
+  redirect_res.set(http::field::content_type, "html/text");
   // Instantiate the request handler (Login Handler)
   std::string temp = "/login";
-  LoginHandler req_handler(temp, out_config, cookies);
+  LoginHandler req_handler(temp, out_config, cookies, redirect_res);
 
   bool is_valid = false;
   

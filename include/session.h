@@ -55,6 +55,7 @@ private:
   enum { max_length = 1024 };
   char data_[max_length];
   std::deque<std::string>& cookies_;
+  http::response<http::string_body> redirect_res;
 };
 
 #endif

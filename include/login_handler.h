@@ -12,7 +12,7 @@ namespace http = boost::beast::http;
 class LoginHandler : public RequestHandler
 {
   public:
-    LoginHandler(const std::string& location_path, const NginxConfig& config, std::deque<std::string>& cookies);
+    LoginHandler(const std::string& location_path, const NginxConfig& config, std::deque<std::string>& cookies, http::response<http::string_body> redirect_result);
     http::response<http::string_body> handle_request(const http::request<http::string_body>& request);
     http::response<http::string_body> handle_get_request(const http::request<http::string_body>& request);
     http::response<http::string_body> handle_post_request(const http::request<http::string_body>& request);
@@ -23,6 +23,7 @@ class LoginHandler : public RequestHandler
   
   private:
     std::deque<std::string>& cookies_;
+    http::response<http::string_body> redirect_res;
 };
 
 #endif

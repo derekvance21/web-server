@@ -23,7 +23,7 @@ function test() {
   curl_args=$3
   echo "Testing $req ..."
   curl -sS -m 2 -b $COOKIE -o $OUTPUT "http://localhost:${PORT}${req}" $curl_args
-  diff -w $OUTPUT "$REGRESSION_FOLDER/$regression"
+  diff -w $OUTPUT "$REGRESSION_FOLDER/${regression}"
 }
 
 function test_proxy() {
@@ -54,17 +54,16 @@ server=$!
 sleep 0.5 # wait a bit before starting tests to avoid race conditions
 
 # Authenticate
-curl -sS -m 2 -o $OUTPUT http://localhost:$PORT/login -d password=incorrect-password
+curl -sS -m 2 -o $OUTPUT http://localhost:$PORT/echo -d password=incorrect-password
 diff -w $OUTPUT "$REGRESSION_FOLDER/regression_login_denied.out"
 
-curl -sS -c $COOKIE -m 2 -o $OUTPUT http://localhost:$PORT/login -d password=juzang-password
+curl -sS -c $COOKIE -m 2 -o $OUTPUT http://localhost:$PORT/echo -d password=juzang-password
 diff -w $OUTPUT "$REGRESSION_FOLDER/regression_login.out"
 
 test "/bad/location" "regression_404.out" "-i"
 test "/static/hello.html" "regression_static.out" "-i"
 test "/static1/img.jpg" "regression_static1.out" "-i"
 test "/static/sub_folder/dog.txt" "regression_static2.out" "-i"
-test_proxy "/vaxx/text.txt" "http://34.105.8.173/static/text.txt"
 test_proxy "/uw" "http://www.washington.edu"
 
 test_bad_request

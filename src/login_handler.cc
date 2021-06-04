@@ -11,8 +11,8 @@
 namespace http = boost::beast::http;
 int MAX_NUM_COOKIES = 15;
 
-LoginHandler::LoginHandler(const std::string& location_path, const NginxConfig& config, std::deque<std::string>& cookies)
-  : RequestHandler(location_path, config), cookies_(cookies)
+LoginHandler::LoginHandler(const std::string& location_path, const NginxConfig& config, std::deque<std::string>& cookies, http::response<http::string_body> redirect_result)
+  : RequestHandler(location_path, config), cookies_(cookies), redirect_res(redirect_result)
 {}
 
 http::response<http::string_body> LoginHandler::handle_request(const http::request<http::string_body>& request)
@@ -48,18 +48,11 @@ http::response<http::string_body> LoginHandler::handle_post_request(const http::
         // Generate and set cookie
         std::string cookie = generate_cookie();
         if(set_cookie(cookie)){
-          res.set(http::field::set_cookie, "session_id=" + cookie);
+          redirect_res.set(http::field::set_cookie, "session_id=" + cookie);
         } 
 
-        // TODO: here is probably where we would do the redirection
-        // Set rest of fields
-        res_body = "Authentication Successful\n";
-        content_length = std::to_string(res_body.length());
-        res.result(http::status::ok);
-        res.set(http::field::content_type, "text/html");
-        res.set(http::field::content_length, content_length);
-        res.body() = res_body;
-        return res; 
+        // return the resource originally requested
+        return redirect_res; 
     }
 
     // if the cookie is incorrect, return an unauthorized response
@@ -142,8 +135,7 @@ std::string LoginHandler::generate_cookie() // used https://stackoverflow.com/qu
     return str;
 }
 
-bool LoginHandler::set_cookie(std::string cookie)
-{
+bool LoginHandler::set_cookie(std::string cookie){
   if(cookies_.size() >= MAX_NUM_COOKIES){
     cookies_.pop_front();
   }

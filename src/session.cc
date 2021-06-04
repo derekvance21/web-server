@@ -79,15 +79,12 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
       // look for cookie in cookie queue
       std::string current_cookie = std::string{req[http::field::cookie]};
       if(current_cookie.empty() || !validate_cookie(current_cookie)){
-        // Reformat inputs for create handler
+        // save response for redirection after successful login
+        request_handler = createHandler(loc, handler, child_block);
+        redirect_res = request_handler->handle_request(req);
+        // call login handler first
         loc = "/login";
         handler = "LoginHandler";
-
-        // Add headers to request for redirection
-        // TODO: use these to format response into a new redirected request
-        req.set("orig-target", req.target());
-        req.set("orig-body", req.body());
-        req.set("orig-version", req.version());
       }
 
       // we have found a match, so change request_handler to new location/type
@@ -139,9 +136,8 @@ RequestHandler* Session::createHandler(std::string location, std::string handler
     return new BlockingHandler(location, config_child);
   }
   if(handler == "LoginHandler") {
-    return new LoginHandler(location, config_child, cookies_);
+    return new LoginHandler(location, config_child, cookies_, redirect_res);
   }
-
   return new NotFoundHandler(location, config_child);
 }
 
