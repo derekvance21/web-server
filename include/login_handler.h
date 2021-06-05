@@ -17,6 +17,7 @@ class LoginHandler : public RequestHandler
     http::response<http::string_body> handle_get_request(const http::request<http::string_body>& request);
     http::response<http::string_body> handle_post_request(const http::request<http::string_body>& request);
     int ReadFile(std::string fullpath, std::string& file_content);
+    std::string GetPath(const http::request<http::string_body>& request);
     std::string generate_cookie();
     bool set_cookie(std::string cookie);
     std::deque<std::string> get_cookies();

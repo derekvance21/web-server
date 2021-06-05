@@ -26,4 +26,5 @@ location /sleep BlockingHandler {
 }
 
 location /login LoginHandler {
+  root ./static_folder;  # supports relative path
 }

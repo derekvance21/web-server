@@ -85,6 +85,13 @@ http::response<http::string_body> Session::url_dispatcher(http::request<http::st
         // call login handler first
         loc = "/login";
         handler = "LoginHandler";
+        std::map<std::string, std::pair<std::string, NginxConfig>>::reverse_iterator iter2;
+        for(iter2 = loc_map_.rbegin(); iter2 != loc_map_.rend(); iter2++) {
+          if(iter2->first == "/login") {
+            child_block = iter2->second.second;
+            break;
+          }
+        }
       }
 
       // we have found a match, so change request_handler to new location/type

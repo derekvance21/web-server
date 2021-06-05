@@ -64,7 +64,7 @@ TEST_F(LoginHandlerTest, StatusCodeDeniedResponseTest)
   EXPECT_TRUE(res.result_int() == 401);
 }
 
-TEST_F(LoginHandlerTest, StatusCodeGetEchoRequestTest)
+/*TEST_F(LoginHandlerTest, StatusCodeGetEchoRequestTest)
 {
   // create redirect response
   http::response<http::string_body> redirect_res;
@@ -134,7 +134,7 @@ TEST_F(LoginHandlerTest, StatusCodeGetStaticRequestTest)
 
   // Server will not respond to unauthenticated /echo request
   EXPECT_TRUE(osresponse_gotten.str() != response_expect);
-}
+}*/
 
 
 TEST_F(LoginHandlerTest, MaxCookieReachedTest)

@@ -6,6 +6,7 @@
 #include "request_handler.h"
 #include "login_handler.h"
 #include "not_found_handler.h"
+#include "static_handler.h"
 #include <boost/beast/http.hpp>
 
 namespace http = boost::beast::http;
@@ -74,7 +75,11 @@ http::response<http::string_body> LoginHandler::handle_get_request(const http::r
 // to display the html page?
 
     // get the login html file
-    std::string fullpath = "../tests/static_folder/login.html";
+    //StaticHandler obj("/static", config);
+    //return obj.handle_request(request);
+    
+    std::string fullpath = GetPath(request);
+    std::cerr << "FULL PATH:" <<fullpath;
     std::string file_content;
     int code = ReadFile(fullpath, file_content);
 
@@ -96,6 +101,32 @@ http::response<http::string_body> LoginHandler::handle_get_request(const http::r
     res.body() = file_content;
 
     return res;
+}
+
+/* Generates the path for the file requested */
+std::string LoginHandler::GetPath(const http::request<http::string_body>& request){
+
+  std::string uri_path = "/login.html";
+  std::string req_path = "", full_path = "";
+
+  /*// Check for whether the handler's location is specified in the uri path
+  // Ex. /static, /static1, /static2 etc.
+  size_t loc_found = uri_path.find(location_path, 0);
+  if (loc_found != std::string::npos)
+    req_path = uri_path.substr(loc_found+location_path.length());
+  */
+  // if file path passed correctly, look for root path in child config block
+  //std::cerr <<"CONFIG" << std::string(config);
+  std::cerr << "CONFIG" << config.statements_[0]->tokens_[1];
+  if (!config.statements_.empty() &&
+      config.statements_[0]->tokens_.size() == 2 &&
+      config.statements_[0]->tokens_[0] == "root"){
+    std::string root = config.statements_[0]->tokens_[1];
+    full_path = root + uri_path;
+  }
+
+  // Note: if full_path is empty or invalid, ReadFile() will catch it and 404 will be returned
+  return full_path;
 }
 
 // helper function to check if we can read the file

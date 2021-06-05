@@ -20,5 +20,6 @@ location /vaxx ReverseProxyHandler {
 location /sleep BlockingHandler {
 }
 
-location /login LoginHandler { 
+location /login LoginHandler {
+  root ../static_folder1; # supports relative path
 }
